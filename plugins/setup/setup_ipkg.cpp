@@ -55,7 +55,6 @@ eSetupWindow (_("Package Manager"), 10, 350)
 {
   move (ePoint (180, 100));
   int entry = 0;
-  FILE *F;
   struct stat st;
 
   CONNECT ((new

@@ -268,9 +268,8 @@ rc_config::write ()
     fclose (in);
   if (out)
     fclose (out);
-  sprintf (line, "ln -sf ../init.d/emu_%s /etc/rcS.d/S40emu", EMU[RC->v_SelectedEmu]);
-  system (line);
-  system ("reset_emu.sh");
+  // sprintf (line, "ln -sf ../init.d/emu_%s /etc/rcS.d/S40emu", EMU[RC->v_SelectedEmu]); system (line);
+  // system ("killall sleep");
 #ifdef DEBUG
   printf ("End WriteRC()\n");
 #endif

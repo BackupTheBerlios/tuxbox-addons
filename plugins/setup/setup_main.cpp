@@ -33,7 +33,7 @@
 
 
 #ifdef DM7020
-#define TITLE "Setup plugin (v0.03)"
+#define TITLE "Setup plugin (v0.04)"
 #else
 #define TITLE "Setup plugin (v0.19)"
 #endif

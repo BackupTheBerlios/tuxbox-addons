@@ -1,9 +1,9 @@
-Package: setup-plugin
-Section: plugins
+Package: emud
+Section: daemons
 Priority: optional
-Version: 0.04-3
+Version: 0.01-2
 Architecture: dreambox
 Maintainer: Ronaldd <Ronaldd@sat4all.com>
-Depends: emud
-Description: Ronald'd setup plugin for DM7020
+Depends:
+Description: Ronald'd emu daemon
 Source: http://developer.berlios.de/projects/tuxbox-addons/

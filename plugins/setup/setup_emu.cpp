@@ -113,6 +113,7 @@ eWindow (0)
   CONNECT (eEmuEnabled->checked, eZapEmuSetup::EmuEnabledChanged);
 #endif
 
+#ifdef NOT_ANY_MORE
   keyupdate = new eButton (this);
   keyupdate->setShortcut ("blue");
   keyupdate->setShortcutPixmap ("blue");
@@ -132,6 +133,7 @@ eWindow (0)
   softcam2all->setHelpText (_("Convert SoftCam.Key to all other key formats"));
   softcam2all->loadDeco ();
   CONNECT (softcam2all->selected, eZapEmuSetup::softcam2allPressed);
+#endif
 
 #ifdef NOT_ANY_MORE
   v_CardInfo = CardInfo ();

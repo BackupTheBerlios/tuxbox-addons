@@ -43,7 +43,11 @@ CFLAGS   = $(DEFINES) $(INCLUDES) -fno-rtti -fno-exceptions -Wall -O2 -mcpu=405 
 feeds2dir: $(F2D_O)
 	$(CXX) -Wall -o feeds2dir $(F2D_O)
 
-all: $(PLUGIN).so $(PACKAGE)
+all: $(PLUGIN).so emud $(PACKAGE)
+
+emud: emud.o
+	$(CXX) -Wall -Os -mcpu=405 -mmultiple -mstring -g -ggdb3 -pipe   -o emud emud.o
+	$(STRIP) --remove-section=.note --remove-section=.comment emud
 
 $(PLUGIN).so: $(OBJECTS)
 	$(CXX) -shared -Wall -Os -mcpu=405 -mmultiple -mstring -g -ggdb3 -pipe   -o $(PLUGIN).so  $(OBJECTS)
@@ -59,8 +63,18 @@ package:
 	cp files/control tmp_root/CONTROL
 	cp files/postinst tmp_root/CONTROL
 	cp files/mk_emulist.sh tmp_root/usr/bin
-	cp files/reset_emu.sh tmp_root/usr/bin
 	cp files/mk_ronaldd_image.sh tmp_root/usr/bin
+	ipkg-build -o 0 -g 0 tmp_root
+	rm -rf tmp_root
+	mkdir -p tmp_root/CONTROL
+	mkdir -p tmp_root/usr/bin
+	mkdir -p tmp_root/etc/init.d
+	mkdir -p tmp_root/etc/rcS.d
+	cp files/control_emud tmp_root/CONTROL/control
+	cp files/postinst_emud tmp_root/CONTROL/postinst
+	cp emud tmp_root/usr/bin
+	cp files/emud.sh tmp_root/etc/init.d/emud.sh
+	ln -s ../init.d/emud.sh tmp_root/etc/rcS.d/S41emud
 	ipkg-build -o 0 -g 0 tmp_root
 
 .cpp.o:
@@ -78,7 +92,10 @@ endif
 ifeq ($(BOX),DM7020)
 	ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
 	#ncftpput -u root -p dreambox dm7020 /tmp setup*.ipk
-	cp setup*ipk /local/web/dreambox/root/ipkg/feed
+	cp *ipk /local/web/dreambox/root/ipkg/feed
+	ipkg-make-index /local/web/dreambox/root/ipkg/feed >/local/web/dreambox/root/ipkg/feed/Packages
+	gzip -9 -f /local/web/dreambox/root/ipkg/feed/Packages
+
 	rm -f $(PLUGIN).zip
 	zip $(PLUGIN).zip $(PLUGIN).so $(PLUGIN).cfg
 endif
