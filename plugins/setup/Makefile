@@ -11,7 +11,8 @@ DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_CS -DSETUP_GBOX -DDM5600
 OBJECTS  = setup_5600.o setup_usb.o setup_main.o setup_cs.o setup_gbox.o setup_rdg.o
 else
 BOX = DM7000
-DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_GBOX -DSETUP_CS -DSETUP_RESTORE -DDM7000 #-DSETUP_RDG
+DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_GBOX -DSETUP_CS -DSETUP_RESTORE \
+		-DDM7000 -DMOUNT_UNMOUNT #-DSETUP_RDG
 OBJECTS  = setup_runapp.o setup_extra.o setup_rc.o setup_services.o setup_emu.o setup_usb.o setup_main.o \
 	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o
 endif

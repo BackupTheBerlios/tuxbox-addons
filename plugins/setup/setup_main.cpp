@@ -27,7 +27,7 @@
 #include "setup_rc.h"
 #include "setup_restore.h"
 
-#define TITLE "Setup plugin (v0.17)"
+#define TITLE "Setup plugin (v0.18)"
 
 #include <lib/gui/emessage.h>
 #include <lib/gui/listbox.h>
@@ -61,6 +61,8 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
   move (ePoint (180, 100));
   int
     entry = 0;
+  FILE *
+    F;
 
 #ifdef SETUP_EMU
   CONNECT ((new eListBoxEntryMenu (&list, _("EMU Setup"), eString ().sprintf ("(%d) %s", ++entry, _("open EMU setup"))))->selected, eMySettings::emu_setup);
@@ -76,8 +78,12 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
 #endif
 
 #ifdef SETUP_USB
-  CONNECT ((new eListBoxEntryMenu (&list, _("USB disk Setup"), eString ().sprintf ("(%d) %s", ++entry, _("open USB disk setup"))))->selected,
-           eMySettings::my_harddisc_setup);
+  if ((F = fopen ("/dev/scsi/host0/bus0/target0/lun0/disc", "r")) != NULL)
+    {
+      fclose (F);
+      CONNECT ((new eListBoxEntryMenu (&list, _("USB disk Setup"), eString ().sprintf ("(%d) %s", ++entry, _("open USB disk setup"))))->selected,
+               eMySettings::usb_setup);
+    }
 #endif
 
 #ifdef SETUP_INST
@@ -88,27 +94,18 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
 #endif
 
 #ifdef SETUP_RESTORE
-  FILE *
-    F = fopen ("/var/tuxbox/config/enigma/config.save", "r");
+  F = fopen ("/var/tuxbox/config/enigma/config.save", "r");
   if (F)
     {
       CONNECT ((new
-                eListBoxEntryMenu (&list, _("Restore Settings (Not ready)"),
+                eListBoxEntryMenu (&list, _("Restore Settings"),
                                    eString ().sprintf ("(%d) %s", ++entry, _("Open Restore Settings window, for testing puposes only"))))->selected,
                eMySettings::restore_setup);
       fclose (F);
     }
 #endif
 
-#ifdef MOUNT_UNMOUNT
-  CONNECT ((new eListBoxEntryMenu (&list, _("Mount USB stick"), eString ().sprintf ("(%d) %s", ++entry, _("Mount USB stick"))))->selected,
-           eMySettings::mount_usb);
-  CONNECT ((new eListBoxEntryMenu (&list, _("UN-Mount USB stick"), eString ().sprintf ("(%d) %s", ++entry, _("UN-Mount USB stick"))))->selected,
-           eMySettings::umount_usb);
-#endif
-
-  new
-  eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
+  new eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
 
   CONNECT ((new eListBoxEntryMenu (&list, _("Plugins"), eString ().sprintf ("(%d) %s", ++entry, _("Run the normale plugins"))))->selected,
            eMySettings::run_plugins);
@@ -168,11 +165,11 @@ eMySettings::services_setup ()
 
 #ifdef SETUP_USB
 void
-eMySettings::my_harddisc_setup ()
+eMySettings::usb_setup ()
 {
-  printf ("eMySettings::my_harddisc_setup()\n");
+  printf ("eMySettings::usb_setup()\n");
   hide ();
-  eMyHarddiskSetup setup;
+  UsbSetup setup;
   setup.show ();
   setup.exec ();
   setup.hide ();
@@ -216,62 +213,3 @@ eMySettings::sw_remove ()
   rem.hide ();
 }
 #endif // SETUP_INST
-
-#ifdef MOUNT_UNMOUNT
-int
-usb_mounted ()
-{
-  int ret;
-  FILE *F;
-  F = fopen ("/mnt/usb/a", "w");
-  if (F)
-    {
-      fclose (F);
-      ret = 1;
-    }
-  else
-    ret = 0;
-  return ret;
-}
-
-void
-eMySettings::mount_usb ()
-{
-  eMessageBox *msg;
-  if (usb_mounted ())
-    msg = new eMessageBox (_("USB Stick is already mounted"), _("USB Stick is already mounted"), eMessageBox::btOK | eMessageBox::iconWarning);
-  else
-    {
-      system ("mount /dev/scsi/host0/bus0/target0/lun0/part1 /mnt/usb");
-      if (usb_mounted ())
-        msg = new eMessageBox (_("USB Stick successfuly mounted"), _("USB Stick successfuly mounted"), eMessageBox::btOK | eMessageBox::iconInfo);
-      else
-        msg =
-          new eMessageBox (_("USB Stick NOT MOUNTED, unknown error"), _("USB Stick NOT MOUNTED, unknown error"), eMessageBox::btOK | eMessageBox::iconError);
-    }
-  msg->show ();
-  msg->exec ();
-  msg->hide ();
-}
-
-void
-eMySettings::umount_usb ()
-{
-  eMessageBox *msg;
-  if (!usb_mounted ())
-    msg = new eMessageBox (_("USB Stick is NOT MOUNTED"), _("USB Stick is NOT MOUNTED"), eMessageBox::btOK | eMessageBox::iconWarning);
-  else
-    {
-      system ("umount /mnt/usb");
-      if (usb_mounted ())
-        msg =
-          new eMessageBox (_("USB Stick IS STILL MOUNTED, unknown error"), _("USB Stick IS STILL MOUNTED, unknown error"),
-                           eMessageBox::btOK | eMessageBox::iconError);
-      else
-        msg = new eMessageBox (_("USB Stick successfuly un-mounted"), _("USB Stick successfuly un-mounted"), eMessageBox::btOK | eMessageBox::iconInfo);
-    }
-  msg->show ();
-  msg->exec ();
-  msg->hide ();
-}
-#endif // MOUNT_UNMOUNT

@@ -32,7 +32,7 @@ class eButton;
 class eMySettings:public eSetupWindow
 {
 private:
-  void my_harddisc_setup ();
+  void usb_setup ();
   void mount_usb ();
   void umount_usb ();
   void sw_install ();
