@@ -34,6 +34,7 @@
 #include <enigma_plugins.h>
 #include <lib/base/console.h>
 #include <plugin.h>
+#include <lib/gui/echeckbox.h>
 
 #include <dirent.h>
 #include <libgen.h>
@@ -47,6 +48,7 @@
 char exe[256];
 char dir[256];
 int InFileBrowser;
+int qwerty;
 
 ipkgSetup::ipkgSetup ():
 eSetupWindow (_("Package Manager"), 10, 350)
@@ -146,9 +148,10 @@ void
 ipkgSetup::ipkg2ronaldd ()
 {
   int res;
-  eMessageBox msg (_("Upgrade to Ronaldd image?"),
-                   _("This wil upgrade some original packages (enigma and others) to changed versions"), eMessageBox::btYes | eMessageBox::btCancel,
-                   eMessageBox::btCancel);
+  eMessageBox
+    msg (_
+         ("This wil upgrade some original packages (enigma and others) to changed versions, for better emu support\n\nIf you want to go back to an original image, you need to flash the original .nfi file"),
+         _("Upgrade to Ronaldd image?"), eMessageBox::btYes | eMessageBox::btCancel, eMessageBox::btCancel);
   msg.show ();
   res = msg.exec ();
   msg.hide ();
@@ -167,12 +170,13 @@ ipkgSetup::ipkg2ronaldd ()
 
 
 void
-get_package_details (char *file, char *version)
+get_package_details (char *file, char *version, char *section)
 {
   FILE *F;
   char line[2048], *ptr;
 
-  strcpy (version, "?");
+  if (version)
+    strcpy (version, "?");
 
   F = fopen (file, "r");
   if (F)
@@ -183,7 +187,15 @@ get_package_details (char *file, char *version)
             {
               *ptr = '\0';
             }
-          if (strncmp (line, "Version: ", 9) == 0)
+          if (section && strncmp (line, "Section: ", 9) == 0)
+            {
+              if ((ptr = strchr (line, ' ')) != NULL)
+                {
+                  ptr++;
+                  strcpy (section, ptr);
+                }
+            }
+          if (version && strncmp (line, "Version: ", 9) == 0)
             {
               if ((ptr = strchr (line, ' ')) != NULL)
                 {
@@ -236,7 +248,7 @@ eSetupWindow (_("Package Manager"), 10, 450)
             }
           else
             {
-              get_package_details (file, version);
+              get_package_details (file, version, NULL);
               sprintf (name, "%s - %s", namelist[i]->d_name, version);
               sprintf (file, "/usr/lib/ipkg/info/%s.control", namelist[i]->d_name);
               if (stat (file, &st) == 0)
@@ -260,9 +272,10 @@ void
 ipkgInstRem::okPressed (eListBoxEntryText * item)
 {
   eString tmp;
-  char file[320], package[256], ipkg_cmd[64];
+  char file[320], package[256], ipkg_cmd[64], section[128];
   struct stat st;
   int res, i;
+
   tmp = item->getText ();
   if (tmp.c_str ()[0] == '[')
     {
@@ -285,28 +298,49 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
       sprintf (file, "/usr/lib/ipkg/info/%s.control", package);
       if (stat (file, &st) == 0)
         {
-          eMessageBox msg (_("Are you SURE to remove this package?\n"),
-                           _("Are you SURE to remove this package?"), eMessageBox::btYes | eMessageBox::btCancel, eMessageBox::btCancel);
-          msg.show ();
-          res = msg.exec ();
-          msg.hide ();
-          sprintf (exe, "ipkg remove %s", package);
+          qwerty = 1;
+          ipkgConfirm confirm;
+          confirm.show ();
+          confirm.exec ();
+          confirm.hide ();
+          res = confirm.do_remove;
+          strcpy (ipkg_cmd, "remove");
+          if (confirm.do_install && confirm.do_remove)
+          {
+            strcpy (ipkg_cmd, "-force-reinstall install");
+            get_package_details (file, NULL, section);
+            if ((strcmp (package, "setup-plugin") == 0) || (strcmp (section, "settings") == 0) || confirm.v_force_overwrite)
+            {
+              sprintf (exe, "%s %s", "-force-overwrite", ipkg_cmd);
+              strcpy (ipkg_cmd, exe);
+            }
+          }
+          sprintf (exe, "ipkg %s %s", ipkg_cmd, package);
         }
       else
         {
-          eMessageBox msg (_("Are you SURE to install this package?\n"),
-                           _("Are you SURE to install this package?"), eMessageBox::btYes | eMessageBox::btCancel, eMessageBox::btCancel);
-          msg.show ();
-          res = msg.exec ();
-          msg.hide ();
-          if (strcmp (package, "setup-plugin") == 0)
+          qwerty = 0;
+          ipkgConfirm confirm;
+          confirm.show ();
+          confirm.exec ();
+          confirm.hide ();
+          res = confirm.do_install;
+          sprintf (file, "%s/%s", dir, package);
+          get_package_details (file, NULL, section);
+          strcpy (ipkg_cmd, "install");
+          if ((strcmp (package, "setup-plugin") == 0) || (strcmp (section, "settings") == 0) || confirm.v_force_overwrite)
             strcpy (ipkg_cmd, "-force-overwrite install");
-          else
-            strcpy (ipkg_cmd, "install");
           sprintf (exe, "ipkg %s %s", ipkg_cmd, package);
         }
-      if (res == eMessageBox::btYes)
+      if (res)
         {
+          if ( (qwerty == 0) && (strcmp (section, "settings") == 0) && (stat ("/etc/.settings_package", &st) == 0) )
+          {
+            eMessageBox msg (_("please wait removing old settings package.\n"), _("please wait..."), 0);
+            msg.show ();
+            system ( "ipkg remove `cat /etc/.settings_package`" );
+            msg.hide ();
+          }
           Executable = exe;
           printf ("E: %s\n", Executable);
           strcpy (RUN_MESSAGE, "");
@@ -320,6 +354,112 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
     }
   InFileBrowser = 1;
   close (0);
+}
+
+ipkgConfirm::ipkgConfirm ():
+eWindow (0)
+{
+  printf ( "ipkgConfirm::ipkgConfirm action=%d\n", qwerty );
+  do_install = 0;
+  do_remove = 0;
+  v_force_overwrite = 0;
+
+  cmove (ePoint (170, 150));
+  cresize (eSize (380, 330));
+
+  force_overwrite = new eCheckbox (this, v_force_overwrite, 1);
+  force_overwrite->setText (_("Force overwrite"));
+  force_overwrite->move (ePoint (10, 10));
+  force_overwrite->resize (eSize (180, 35));
+  force_overwrite->setHelpText (_("Select to overwrite existing files that are also in package."));
+  CONNECT (force_overwrite->checked, ipkgConfirm::force_overwriteChanged);
+
+  if (qwerty == 0)
+    {
+      setText (_("Install package?"));
+      install = new eButton (this);
+      install->setText ("install");
+      install->setShortcut ("green");
+      install->setShortcutPixmap ("green");
+      install->move (ePoint (10, 230));
+      install->resize (eSize (170, 40));
+      install->setHelpText (_("Install package"));
+      install->loadDeco ();
+      CONNECT (install->selected, ipkgConfirm::installPressed);
+    }
+  else
+    {
+      setText (_("Remove package?"));
+      reinstall = new eButton (this);
+      reinstall->setShortcut ("yellow");
+      reinstall->setShortcutPixmap ("yellow");
+      reinstall->loadDeco ();
+      reinstall->setText ("reinstall");
+      reinstall->move (ePoint (10, 180));
+      reinstall->resize (eSize (170, 40));
+      reinstall->setHelpText (_("Re-Install package"));
+      CONNECT (reinstall->selected, ipkgConfirm::reinstallPressed);
+
+      remove = new eButton (this);
+      remove->setShortcut ("green");
+      remove->setShortcutPixmap ("green");
+      remove->loadDeco ();
+      remove->setText ("remove");
+      remove->move (ePoint (10, 230));
+      remove->resize (eSize (170, 40));
+      remove->setHelpText (_("Remove package"));
+      CONNECT (remove->selected, ipkgConfirm::removedPressed);
+    }
+  abort = new eButton (this);
+  abort->setShortcut ("red");
+  abort->setShortcutPixmap ("red");
+  abort->loadDeco ();
+  abort->setText (_("cancel"));
+  abort->move (ePoint (200, 230));
+  abort->resize (eSize (170, 40));
+  abort->setHelpText (_("Do nothing"));
+  CONNECT (abort->selected, ipkgConfirm::abortPressed);
+
+  statusbar = new eStatusBar (this);
+  statusbar->move (ePoint (0, clientrect.height () - 50));
+  statusbar->resize (eSize (clientrect.width (), 50));
+  statusbar->loadDeco ();
+}
+
+void
+ipkgConfirm::installPressed ()
+{
+  do_install = 1;
+  do_remove = 0;
+  close (0);
+}
+
+void
+ipkgConfirm::reinstallPressed ()
+{
+  do_install = 1;
+  do_remove = 1;
+  close (0);
+}
+
+void
+ipkgConfirm::removedPressed ()
+{
+  do_install = 0;
+  do_remove = 1;
+  close (0);
+}
+
+void
+ipkgConfirm::abortPressed ()
+{
+  close (0);
+}
+
+void
+ipkgConfirm::force_overwriteChanged (int i)
+{
+  v_force_overwrite = i;
 }
 
 #endif // SETUP_IPKG

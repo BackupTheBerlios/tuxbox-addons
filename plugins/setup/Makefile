@@ -79,6 +79,8 @@ ifeq ($(BOX),DM7020)
 	ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
 	#ncftpput -u root -p dreambox dm7020 /tmp setup*.ipk
 	cp setup*ipk /local/web/dreambox/root/ipkg/feed
+	rm -f $(PLUGIN).zip
+	zip $(PLUGIN).zip $(PLUGIN).so $(PLUGIN).cfg
 endif
 ifeq ($(BOX),DM5600)
 	cp setup5.so setup5.cfg /net/tuxbox/emu_dm5600_root/lib/tuxbox/plugins/
