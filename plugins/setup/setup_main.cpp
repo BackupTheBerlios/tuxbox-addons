@@ -121,8 +121,7 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
     }
 #endif
 
-  new
-  eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
+  new eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
 
   CONNECT ((new eListBoxEntryMenu (&list, _("Plugins"), eString ().sprintf ("(%d) %s", ++entry, _("Run the normale plugins"))))->selected,
            eMySettings::run_plugins);
@@ -181,13 +180,13 @@ eMySettings::ipkg_setup ()
       msg.hide ();
       if (res == eMessageBox::btYes)
         {
-  sprintf (exe, "sh -c \"ipkg update ; ipkg install -force-overwrite setup-plugin\"");
-  Executable = exe;
-  strcpy (RUN_MESSAGE, "");
-  RunApp run;
-  run.show ();
-  run.exec ();
-  run.hide ();
+          sprintf (exe, "sh -c \"ipkg update ; ipkg install -force-overwrite setup-plugin\"");
+          Executable = exe;
+          strcpy (RUN_MESSAGE, "");
+          RunApp run;
+          run.show ();
+          run.exec ();
+          run.hide ();
         }
     }
 

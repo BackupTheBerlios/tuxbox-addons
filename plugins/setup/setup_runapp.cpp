@@ -130,16 +130,16 @@ RunApp::getData (eString str)
   // printf( "RunApp::getData\n");
   eString buf;
   buf = lState->getText () + str;
-  begin = (char *)buf.c_str();
-  ptr = begin + strlen(begin);
+  begin = (char *) buf.c_str ();
+  ptr = begin + strlen (begin);
   c = 0;
   while (ptr > begin && c <= 17)
-  {
-    ptr--;
-    if (ptr[0] == '\n')
-      c++;
-  }
-  if(ptr[0] == '\n')
+    {
+      ptr--;
+      if (ptr[0] == '\n')
+        c++;
+    }
+  if (ptr[0] == '\n')
     ptr++;
   lState->setText (ptr);
   output = 1;

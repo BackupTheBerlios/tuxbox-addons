@@ -54,17 +54,17 @@ class ipkgConfirm:public eWindow
   eButton *install, *remove, *abort, *reinstall;
   eCheckbox *force_overwrite;
   eStatusBar *statusbar;
-  void installPressed();
-  void reinstallPressed();
-  void removedPressed();
-  void abortPressed();
+  void installPressed ();
+  void reinstallPressed ();
+  void removedPressed ();
+  void abortPressed ();
   void force_overwriteChanged (int i);
 private:
 public:
   int do_install;
   int do_remove;
   int v_force_overwrite;
-  ipkgConfirm ();
+    ipkgConfirm ();
 };
 
 #endif

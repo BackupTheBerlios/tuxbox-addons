@@ -39,10 +39,10 @@ feed2dir (char *src)
 
   printf ("feed2dir: %s\n", src);
 
-  if (strncmp(basename (src), "official-updated-ronaldd", 24) == 0)
-    strcpy(feed, "official");
+  if (strncmp (basename (src), "official-updated-ronaldd", 24) == 0)
+    strcpy (feed, "official");
   else
-    strcpy(feed, basename (src) );
+    strcpy (feed, basename (src));
 
   unlink (TEMPFILE);
   F = fopen (src, "r");
@@ -126,7 +126,7 @@ feeds2dir ()
             }
           sprintf (list, "/usr/lib/ipkg/lists/%s", line);
           // if ( strncmp ( "official-updated-ronaldd", line, 24) != 0 )
-            feed2dir (list);
+          feed2dir (list);
         }
       fclose (F);
     }
