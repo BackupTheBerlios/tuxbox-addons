@@ -36,12 +36,12 @@ InstallSw::InstallSw ():eWindow (0)
 {
   printf ("InstallSw::InstallSw()\n");
 
-  setText (_("TEST"));
+  setText (_("Install software"));
   cmove (ePoint (100, 100));
   cresize (eSize (520, 400));
 
   dummyb = new eListBox < eListBoxEntryText > (this);
-  dummyb->setText (_("TEST"));
+  dummyb->setText (_("Install software"));
   dummyb->move (ePoint (10, 10));
   dummyb->resize (eSize (500, 300));
   dummyb->loadDeco ();
@@ -83,7 +83,7 @@ RemoveSw::RemoveSw ():eWindow (0)
     entry =
     0;
 
-  setText (_("TEST"));
+  setText (_("Remove Software"));
   cmove (ePoint (100, 100));
   cresize (eSize (520, 400));
 
@@ -98,7 +98,7 @@ RemoveSw::RemoveSw ():eWindow (0)
   CONNECT (abort->selected, RemoveSw::abortPressed);
 
   listb = new eListBox < eListBoxEntryText > (this);
-  listb->setText (_("TEST"));
+  listb->setText (_("Remove Software"));
   listb->move (ePoint (10, 10));
   listb->resize (eSize (500, 300));
   listb->loadDeco ();
@@ -268,6 +268,13 @@ InstallSw::do_install (eListBoxEntryText * item)
       dl.hide ();
       if (dlOk)
         {
+          if (strncmp(abc.c_str(), "set_", 4) == 0)
+          {
+            FILE *F = fopen ( "/tmp/reloadUserBouquets", "w" );
+            if (F)
+              fclose(F);
+            // system ( "rm -f /var/tuxbox/config/enigma/userbouquet*" );
+          }
           sprintf (exe, "/bin/install.sh install %s", abc.c_str ());
           Executable = exe;
           printf ("E: %s\n", Executable);

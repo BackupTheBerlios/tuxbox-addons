@@ -20,7 +20,7 @@ INCLUDES = -I$(CDK_SRC)/apps/tuxbox/enigma/include -I$(CDKROOT)/include -I$(CDKR
 	   -I$(CDKROOT)/lib/sigc++-1.2/include -I$(CDK_SRC)/apps/tuxbox/enigma -I$(CDK_SRC)/apps/misc/libs/libxmltree \
 	   -I$(CDK_SRC)/apps/tuxbox/plugins/include -I$(CDK_SRC)/apps/tuxbox/enigma/src -I.
 
-CFLAGS   = $(DEFINES) $(INCLUDES) -fno-rtti -fno-exceptions -Wall -Os -mcpu=823 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe
+CFLAGS   = $(DEFINES) $(INCLUDES) -fno-rtti -fno-exceptions -Wall -O2 -mcpu=405 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe
 
 
 ifeq ($(BOX),DM7000)
@@ -30,11 +30,11 @@ all: setup5.so
 endif
 
 setup7.so: .7 $(OBJECTS)
-	$(CXX) -shared -Wall -Os -mcpu=823 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe   -o setup7.so  $(OBJECTS)
+	$(CXX) -shared -Wall -Os -mcpu=405 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe   -o setup7.so  $(OBJECTS)
 	$(STRIP) --remove-section=.note --remove-section=.comment setup7.so
 
 setup5.so: .5 $(OBJECTS)
-	$(CXX) -shared -Wall -Os -mcpu=823 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe   -o setup5.so  $(OBJECTS)
+	$(CXX) -shared -Wall -Os -mcpu=405 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe   -o setup5.so  $(OBJECTS)
 	$(STRIP) --remove-section=.note --remove-section=.comment setup5.so
 
 .7:
@@ -57,7 +57,7 @@ install: all
 	cp setup?.cfg setup?.so /net/tuxbox/plugins/
 ifeq ($(BOX),DM7000)
 	cp setup7.so setup7.cfg /net/tuxbox/tftpboot/image/lib/tuxbox/plugins/
-	cp setup7.so setup7.cfg /net/tuxbox/emu_root/lib/tuxbox/plugins/
+	cp setup7.so setup7.cfg /net/tuxbox/emu_root$(KERNEL)/lib/tuxbox/plugins/
 else
 	cp setup5.so setup5.cfg /net/tuxbox/emu_dm5600_root/lib/tuxbox/plugins/
 	cp setup5.so setup5.cfg /net/tuxbox/dm5600/tmp/matrix_031127/lib/tuxbox/plugins/

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifdef SETUP_SERVICES
+#ifdef SETUP_RESTORE
 
 #include "setup.h"
 #include "setup_restore.h"
@@ -61,7 +61,7 @@ eWindow (0)
   cmove (ePoint (170, 150));
   cresize (eSize (390, 350));
 
-  v_DVB = 1; v_AV = 1; v_NET = 0;
+  v_DVB = 1; v_AV = 1; v_NET = 1;
 
   DVB = new eCheckbox (this, v_DVB, 1);
   DVB->setText (_("LNB/rotor set."));

@@ -60,8 +60,7 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
 {
   move (ePoint (180, 100));
   int
-    entry =
-    0;
+    entry = 0;
 
 #ifdef SETUP_EMU
   CONNECT ((new eListBoxEntryMenu (&list, _("EMU Setup"), eString ().sprintf ("(%d) %s", ++entry, _("open EMU setup"))))->selected, eMySettings::emu_setup);
@@ -89,8 +88,16 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
 #endif
 
 #ifdef SETUP_RESTORE
-  CONNECT ((new eListBoxEntryMenu (&list, _("Restore Settings"), eString ().sprintf ("(%d) %s", ++entry, _("open Restore Settings window"))))->selected,
-           eMySettings::restore_setup);
+  FILE *
+    F = fopen ("/var/tuxbox/config/enigma/config.save", "r");
+  if (F)
+    {
+      CONNECT ((new
+                eListBoxEntryMenu (&list, _("Restore Settings (Not ready)"),
+                                   eString ().sprintf ("(%d) %s", ++entry, _("Open Restore Settings window, for testing puposes only"))))->selected,
+               eMySettings::restore_setup);
+      fclose (F);
+    }
 #endif
 
 #ifdef MOUNT_UNMOUNT
@@ -100,8 +107,7 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
            eMySettings::umount_usb);
 #endif
 
-  new
-  eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
+  new eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
 
   CONNECT ((new eListBoxEntryMenu (&list, _("Plugins"), eString ().sprintf ("(%d) %s", ++entry, _("Run the normale plugins"))))->selected,
            eMySettings::run_plugins);
