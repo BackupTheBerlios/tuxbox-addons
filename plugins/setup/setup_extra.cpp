@@ -83,6 +83,47 @@ eWindow (0)
   else
     var_on->setCurrent (0, false);
 
+  l = new eLabel (this);
+  l->move (ePoint (10, 90));
+  l->resize (eSize (120, 25));
+  l->setText (_("Swapfile:"));
+  swap_on = new eComboBox (this, 3, l);
+  swap_on->move (ePoint (130, 90));
+  swap_on->resize (eSize (100, 35));
+  swap_on->setHelpText (_("Make use of swapfile: No, USB or HDD"));
+  swap_on->loadDeco ();
+  new eListBoxEntryText (*swap_on, eString ().sprintf ("no"), (void *) 0);
+  new eListBoxEntryText (*swap_on, eString ().sprintf ("usb"), (void *) 1);
+  new eListBoxEntryText (*swap_on, eString ().sprintf ("hdd"), (void *) 2);
+  if (strcmp (RC->swap_on, "usb") == 0)
+    swap_on->setCurrent (1, false);
+  else if (strcmp (RC->swap_on, "hdd") == 0)
+    swap_on->setCurrent (2, false);
+  else
+    swap_on->setCurrent (0, false);
+
+  l = new eLabel (this);
+  l->move (ePoint (10, 130));
+  l->resize (eSize (120, 25));
+  l->setText (_("Swapsize:"));
+  swap_size = new eComboBox (this, 4, l);
+  swap_size->move (ePoint (130, 130));
+  swap_size->resize (eSize (100, 35));
+  swap_size->setHelpText (_("Give size of swapfile in MB"));
+  swap_size->loadDeco ();
+  new eListBoxEntryText (*swap_size, eString ().sprintf ("8"), (void *) 0);
+  new eListBoxEntryText (*swap_size, eString ().sprintf ("16"), (void *) 1);
+  new eListBoxEntryText (*swap_size, eString ().sprintf ("32"), (void *) 2);
+  new eListBoxEntryText (*swap_size, eString ().sprintf ("64"), (void *) 3);
+  if (strcmp (RC->swap_size, "8") == 0)
+    swap_size->setCurrent (0, false);
+  else if (strcmp (RC->swap_size, "32") == 0)
+    swap_size->setCurrent (2, false);
+  else if (strcmp (RC->swap_size, "64") == 0)
+    swap_size->setCurrent (3, false);
+  else
+    swap_size->setCurrent (1, false);
+
   ok = new eButton (this);
   ok->setText (_("save"));
   ok->setShortcut ("green");
@@ -127,6 +168,36 @@ ExtraSetup::okPressed ()
       break;
     default:
       strcpy (RC->var_on, "flash");
+      break;
+    }
+  switch ((int) swap_on->getCurrent ()->getKey ())
+    {
+    case 1:
+      strcpy (RC->swap_on, "usb");
+      break;
+    case 2:
+      strcpy (RC->swap_on, "hdd");
+      break;
+    default:
+      strcpy (RC->swap_on, "flash");
+      break;
+    }
+  switch ((int) swap_size->getCurrent ()->getKey ())
+    {
+    case 0:
+      strcpy (RC->swap_size, "8");
+      break;
+    case 1:
+      strcpy (RC->swap_size, "16");
+      break;
+    case 2:
+      strcpy (RC->swap_size, "32");
+      break;
+    case 3:
+      strcpy (RC->swap_size, "64");
+      break;
+    default:
+      strcpy (RC->swap_size, "16");
       break;
     }
   RC->write ();

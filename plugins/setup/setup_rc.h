@@ -32,6 +32,8 @@ public:
   int no_emu;
   int sleep;
   char var_on[16];
+  char swap_on[16];
+  char swap_size[16];
   void read ();
   void write ();
 };

@@ -86,6 +86,7 @@ rc_config::read ()
   Enabled = 0;
   v_SelectedEmu = 0;
   strcpy (RC->var_on, "flash");
+  strcpy (RC->swap_on, "no");
   sleep = 0;
 
   file = fopen ("/mnt/flash/etc/rc.config", "r");
@@ -100,6 +101,12 @@ rc_config::read ()
 #ifdef DEBUG
               printf ("RC_CONFIG: %s=%s\n", left, right);
 #endif
+
+              if (strcmp (left, "SWAP_ON") == 0)
+                strcpy (RC->swap_on, right);
+
+              if (strcmp (left, "SWAP_SIZE") == 0)
+                strcpy (RC->swap_size, right);
 
               if (strcmp (left, "VAR_ON") == 0)
                 strcpy (RC->var_on, right);
@@ -215,6 +222,16 @@ rc_config::write ()
                   fprintf (out, "VAR_ON=%s\n", RC->var_on);
                   done |= 64;
                 }
+              else if (strcmp (left, "SWAP_ON") == 0)
+                {
+                  fprintf (out, "SWAP_ON=%s\n", RC->swap_on);
+                  done |= 128;
+                }
+              else if (strcmp (left, "SWAP_SIZE") == 0)
+                {
+                  fprintf (out, "SWAP_SIZE=%s\n", RC->swap_size);
+                  done |= 256;
+                }
 
               else
                 fprintf (out, "%s", line2);
@@ -236,6 +253,10 @@ rc_config::write ()
         fprintf (out, "SLEEP=%d\n", RC->sleep);
       if ((done & 64) == 0)
         fprintf (out, "VAR_ON=%s\n", RC->var_on);
+      if ((done & 128) == 0)
+        fprintf (out, "SWAP_ON=%s\n", RC->swap_on);
+      if ((done & 256) == 0)
+        fprintf (out, "SWAP_SIZE=%s\n", RC->swap_size);
 
       if (fclose (in) == 0)
         in = NULL;

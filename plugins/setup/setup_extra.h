@@ -32,7 +32,7 @@ class eNumber;
 class ExtraSetup:public eWindow
 {
   eButton *ok, *abort;
-  eComboBox *var_on;
+  eComboBox *var_on, *swap_on, *swap_size;
   eNumber *sleep;
   eLabel *l;
   eStatusBar *statusbar;
