@@ -1,0 +1,15 @@
+#! /bin/sh
+
+if [ ! -e /etc/rc.config ]; then
+cat <<END >/etc/rc.config
+CS_SERVER=disabled
+SAMBA=disabled
+CRON=disabled
+DHCP=disabled
+EMU=camx
+SLEEP=0
+VAR_ON=flash
+SWAP_ON=no
+SWAP_SIZE=16
+END
+fi

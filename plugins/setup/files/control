@@ -1,0 +1,9 @@
+Package: setup-plugin
+Section: plugins
+Priority: optional
+Version: 0.01-3
+Architecture: dreambox
+Maintainer: Ronaldd <Ronaldd@sat4all.com>
+Depends:
+Description: Ronald'd setup plugin for DM7020
+Source: http://developer.berlios.de/projects/tuxbox-addons/
