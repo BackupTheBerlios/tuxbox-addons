@@ -38,6 +38,7 @@ private:
   void sw_install ();
   void sw_remove ();
   void emu_setup ();
+  void ipkg_setup ();
   void extra_setup ();
   void services_setup ();
   void run_plugins ();

@@ -20,6 +20,12 @@
 #ifndef __setup_rc_h
 #define __setup_rc_h
 
+#ifdef DM7020
+#define RC_CONFIG "/etc/rc.config"
+#else
+#define RC_CONFIG "/mnt/flash/etc/rc.config"
+#endif
+
 class rc_config
 {
 public:

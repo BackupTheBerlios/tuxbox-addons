@@ -60,7 +60,7 @@ rc_config::read ()
   printf ("ReadRC()\n");
 #endif
 
-  system ("/bin/mk_emulist.sh");
+  system ("mk_emulist.sh");
   file = fopen ("/var/tmp/emulist", "r");
   if (file)
     {
@@ -89,7 +89,7 @@ rc_config::read ()
   strcpy (RC->swap_on, "no");
   sleep = 0;
 
-  file = fopen ("/mnt/flash/etc/rc.config", "r");
+  file = fopen (RC_CONFIG, "r");
   if (file)
     {
       while (fgets (line, 256, file) != NULL)
@@ -162,8 +162,8 @@ rc_config::write ()
 #ifdef DEBUG
   printf ("WriteRC(): StartServer=%d StartSamba=%d StartCron=%d StartDhcp=%d\n", RC->StartServer, RC->StartSamba, RC->StartCron, RC->StartDhcp);
 #endif
-  in = fopen ("/mnt/flash/etc/rc.config", "r");
-  out = fopen ("/mnt/flash/etc/rc.config.new", "w");
+  in = fopen (RC_CONFIG, "r");
+  out = fopen (RC_CONFIG ".new", "w");
   char *ptr;
   char left[32], right[64], line[128], line2[128];
   int done = 0;
@@ -262,12 +262,15 @@ rc_config::write ()
         in = NULL;
       if (fclose (out) == 0)
         out = NULL;
-      rename ("/mnt/flash/etc/rc.config.new", "/mnt/flash/etc/rc.config");
+      rename (RC_CONFIG ".new", RC_CONFIG);
     }
   if (in)
     fclose (in);
   if (out)
     fclose (out);
+  sprintf (line, "ln -sf ../init.d/emu_%s /etc/rcS.d/S40emu", EMU[RC->v_SelectedEmu]);
+  system (line);
+  system ("reset_emu.sh");
 #ifdef DEBUG
   printf ("End WriteRC()\n");
 #endif

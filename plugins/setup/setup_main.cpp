@@ -20,6 +20,7 @@
 #include "setup.h"
 #include "setup_main.h"
 #include "setup_emu.h"
+#include "setup_ipkg.h"
 #include "setup_runapp.h"
 #include "setup_usb.h"
 #include "setup_install.h"
@@ -27,7 +28,11 @@
 #include "setup_rc.h"
 #include "setup_restore.h"
 
+#ifdef DM7020
+#define TITLE "Setup plugin (v0.01)"
+#else
 #define TITLE "Setup plugin (v0.19)"
+#endif
 
 #include <lib/gui/emessage.h>
 #include <lib/gui/listbox.h>
@@ -41,6 +46,7 @@ char *SCRIPTS[MAX_SCRIPTS] =
   { "/bin/keyconvert.sh 2>&1", "/bin/keyupdate.sh 2>&1", "cat /var/tmp/cardinfo", "cat /var/tmp/ipinfo", "/bin/load_d.sh", "/bin/load_a.sh" };
 char *Executable;
 char RUN_MESSAGE[128] = "Script is running, please wait!";
+char NO_OUTPUT_MESSAGE[128] = "Success!";
 rc_config *RC = new rc_config;
 
 extern "C" int plugin_exec (PluginParam * par);
@@ -67,6 +73,12 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
 #ifdef SETUP_EMU
   CONNECT ((new eListBoxEntryMenu (&list, _("EMU Setup"), eString ().sprintf ("(%d) %s", ++entry, _("open EMU setup"))))->selected, eMySettings::emu_setup);
 #endif
+
+#ifdef SETUP_IPKG
+  CONNECT ((new eListBoxEntryMenu (&list, _("Package Manager"), eString ().sprintf ("(%d) %s", ++entry, _("Run Package Manager"))))->selected,
+           eMySettings::ipkg_setup);
+#endif
+
 #ifdef SETUP_EXTRA
   CONNECT ((new eListBoxEntryMenu (&list, _("Extra Setup"), eString ().sprintf ("(%d) %s", ++entry, _("open Extra setup"))))->selected,
            eMySettings::extra_setup);
@@ -105,7 +117,8 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
     }
 #endif
 
-  new eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
+  new
+  eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
 
   CONNECT ((new eListBoxEntryMenu (&list, _("Plugins"), eString ().sprintf ("(%d) %s", ++entry, _("Run the normale plugins"))))->selected,
            eMySettings::run_plugins);
@@ -134,6 +147,20 @@ eMySettings::emu_setup ()
   show ();
 }
 #endif // SETUP_EMU
+
+#ifdef SETUP_IPKG
+void
+eMySettings::ipkg_setup ()
+{
+  printf ("eMySettings::ipkg_setup()\n");
+  hide ();
+  ipkgSetup setup;
+  setup.show ();
+  setup.exec ();
+  setup.hide ();
+  show ();
+}
+#endif // SETUP_IPKG
 
 #ifdef SETUP_EXTRA
 void

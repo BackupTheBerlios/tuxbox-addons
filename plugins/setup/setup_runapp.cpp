@@ -52,7 +52,7 @@ RunApp::RunApp ():
 eWindow (0)
 {
   //setText(_("Running script"));
-  setText (eString ().sprintf ("%s", Executable));
+  setText (eString ().sprintf ("Please wait runnig: %s", Executable));
   cmove (ePoint (50, 100));
   cresize (eSize (630, 400));
 
@@ -85,65 +85,34 @@ eWindow (0)
 int
 RunApp::eventHandler (const eWidgetEvent & e)
 {
-  FILE *file;
-  char buf[1024];
-  int i;
-
   switch (e.type)
     {
     case eWidgetEvent::execBegin:
       {
         app = NULL;
-/*
-			app = new eConsoleAppContainer( eString().sprintf( Executable ));
-		
-			if ( !app->running() )
-			{
-				eMessageBox msg(
-					_("sorry, cannot find script."),
-					_("sorry, cannot find script."),
-					eMessageBox::btOK|eMessageBox::iconError);
-				msg.show();
-				msg.exec();
-				msg.hide();
-				close(-1);
-			}
-			else
-			{
-				CONNECT( app->dataAvail, RunApp::getData );
-				CONNECT( app->appClosed, RunApp::appClosed );
-			}
-*/
+        output = 0;
+        app = new eConsoleAppContainer (eString ().sprintf (Executable));
+        bClose->hide ();
 
-        RunApp::getData (eString ().sprintf (RUN_MESSAGE));
-        file = popen (Executable, "r");
-        if (file)
+        if (!app->running ())
           {
-            while ((i = fread (buf, 1, 1023, file)) > 0)
-              {
-                buf[i] = 0;
-                RunApp::getData (eString ().sprintf ("%s", buf));
-              }
-            pclose (file);
-          }
-        else
-          {
-            eMessageBox msg (_("cannot execute script."), _("cannot execute script."), eMessageBox::btOK | eMessageBox::iconError);
+            eMessageBox msg (_("sorry, cannot find script."), _("sorry, cannot find script."), eMessageBox::btOK | eMessageBox::iconError);
             msg.show ();
             msg.exec ();
             msg.hide ();
             close (-1);
           }
-        RunApp::appClosed (0);
-
+        else
+          {
+            CONNECT (app->dataAvail, RunApp::getData);
+            CONNECT (app->appClosed, RunApp::appClosed);
+          }
       }
       break;
 
-/*
-		case eWidgetEvent::execDone:
-			if (app)
-				delete app;
-*/
+    case eWidgetEvent::execDone:
+      if (app)
+        delete app;
       break;
 
     default:
@@ -156,7 +125,10 @@ void
 RunApp::getData (eString str)
 {
   // printf( "RunApp::getData\n");
-  lState->setText (str);
+  eString buf;
+  buf = lState->getText ();
+  lState->setText (buf + str);
+  output = 1;
 }
 
 void
@@ -171,6 +143,8 @@ void
 RunApp::appClosed (int i)
 {
   // printf( "RunApp::appClosed i=%i\n", i);
+  if (!output)
+    lState->setText (NO_OUTPUT_MESSAGE);
   if (i != 0)
     lState->setText (_("An error occured during exucution"));
   bClose->show ();

@@ -34,6 +34,7 @@ class rc_config;
 
 class RunApp:public eWindow
 {
+  int output;
   eConsoleAppContainer *app;
   eLabel *lState;
   eButton *bCancel, *bClose;

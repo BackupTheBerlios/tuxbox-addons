@@ -17,29 +17,35 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __setup_h
-#define __setup_h
+#ifndef __setup_ipkg_h
+#define __setup_ipkg_h
 
+#include <setup_window.h>
 #include <lib/gui/ewindow.h>
 #include <lib/gui/listbox.h>
 #include <lib/gui/statusbar.h>
 #include <lib/base/console.h>
+#include <lib/gui/ebutton.h>
 
 class eButton;
-class eCheckbox;
-class eComboBox;
-class eNumber;
-class eTextInputField;
-class rc_config;
 
-#define MAX_EMU 10
-#define MAX_SCRIPTS 8
+class ipkgSetup:public eSetupWindow
+{
+private:
+  void ipkg_update ();
+  void ipkg_upgrade ();
+  void ipkg_inst_rem ();
+public:
+    ipkgSetup ();
+};
 
-extern char EMU[MAX_EMU][256];
-extern char *SCRIPTS[MAX_SCRIPTS];
-extern char *Executable;
-extern char RUN_MESSAGE[128];
-extern char NO_OUTPUT_MESSAGE[128];
-extern rc_config *RC;
+class ipkgInstRem:public eSetupWindow
+{
+private:
+  void okPressed (eListBoxEntryText * item);
+    eListBox < eListBoxEntryText > *listbox;
+public:
+    ipkgInstRem ();
+};
 
 #endif
