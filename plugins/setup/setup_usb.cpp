@@ -178,23 +178,16 @@ eMyHarddiskSetup::eMyHarddiskSetup ():eListBoxWindow < eListBoxEntryText > (_("U
       for (int target = 0; target < 1; target++)
         {
           int
-            num =
-            target +
-            bus *
-            2 +
-            host *
-            4;
+            num = target + bus * 2 + host * 4;
           //NOTUSED int c = 'a' + num;
 
           // check for presence
           //NOTUSED char line[1024];
           int
-            ok =
-            1;
+            ok = 1;
           printf ("Open /proc/scsi/usb-storage-%i/%i\n", num, num);
           FILE *
-            f =
-            fopen (eString ().sprintf ("/proc/scsi/usb-storage-%i/%i", num, num).c_str (), "r");
+            f = fopen (eString ().sprintf ("/proc/scsi/usb-storage-%i/%i", num, num).c_str (), "r");
           if (!f)
             continue;
           ok = 1;
@@ -204,15 +197,13 @@ eMyHarddiskSetup::eMyHarddiskSetup ():eListBoxWindow < eListBoxEntryText > (_("U
             {
               printf ("OK\n");
               int
-                capacity =
-                getCapacity (num);
+                capacity = getCapacity (num);
               if (capacity < 0)
                 continue;
 
               capacity = capacity / 1000 * 512 / 1000;
 
-              eString
-                sharddisks;
+              eString sharddisks;
               sharddisks = getModel (num);
               sharddisks += " (";
               if (capacity)
@@ -221,8 +212,7 @@ eMyHarddiskSetup::eMyHarddiskSetup ():eListBoxWindow < eListBoxEntryText > (_("U
 
               nr++;
 
-              new
-              eListBoxEntryText (&list, sharddisks, (void *) num);
+              new eListBoxEntryText (&list, sharddisks, (void *) num);
             }
         }
 

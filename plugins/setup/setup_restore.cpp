@@ -61,7 +61,9 @@ eWindow (0)
   cmove (ePoint (170, 150));
   cresize (eSize (390, 350));
 
-  v_DVB = 1; v_AV = 1; v_NET = 1;
+  v_DVB = 1;
+  v_AV = 1;
+  v_NET = 1;
 
   DVB = new eCheckbox (this, v_DVB, 1);
   DVB->setText (_("LNB/rotor set."));
@@ -128,41 +130,63 @@ RestoreSetup::RestoreNETchanged (int i)
   v_NET = i;
 }
 
-void delete_lnbs()
+void
+delete_lnbs ()
 {
-  int lnb, sat ;
+  int lnb, sat;
   char key[256];
 
-  for (lnb=0; lnb<16; ++lnb)
-  {
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/lofH", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/lofL", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/lofThreshold", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/IncreasedVoltage", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/DiSEqCMode", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/MiniDiSEqCParam", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/DiSEqCParam", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/DiSEqCRepeats", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/FastDiSEqC", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/SeqRepeat", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/SwapCmds", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/uncommitted_cmd", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/useGotoXX", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/useRotorInPower", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/DegPerSec", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/gotoXXLaDirection", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/gotoXXLoDirection", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/gotoXXLatitude", lnb ); eConfig::getInstance()->delKey(key);
-    sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/gotoXXLongitude", lnb ); eConfig::getInstance()->delKey(key);
-    for (sat=0; sat<64; ++sat)
+  for (lnb = 0; lnb < 16; ++lnb)
     {
-      sprintf ( key, "/elitedvb/DVB/config/lnbs/%d/satellites/%d/description", lnb, sat ); eConfig::getInstance()->delKey(key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/lofH", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/lofL", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/lofThreshold", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/IncreasedVoltage", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/DiSEqCMode", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/MiniDiSEqCParam", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/DiSEqCParam", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/DiSEqCRepeats", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/FastDiSEqC", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/SeqRepeat", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/SwapCmds", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/uncommitted_cmd", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/useGotoXX", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/useRotorInPower", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/DegPerSec", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/gotoXXLaDirection", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/gotoXXLoDirection", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/gotoXXLatitude", lnb);
+      eConfig::getInstance ()->delKey (key);
+      sprintf (key, "/elitedvb/DVB/config/lnbs/%d/gotoXXLongitude", lnb);
+      eConfig::getInstance ()->delKey (key);
+      for (sat = 0; sat < 64; ++sat)
+        {
+          sprintf (key, "/elitedvb/DVB/config/lnbs/%d/satellites/%d/description", lnb, sat);
+          eConfig::getInstance ()->delKey (key);
+        }
     }
-  }
   eConfig::getInstance ()->flush ();
 }
 
-void restore_settings()
+void
+restore_settings ()
 {
   FILE *F, *W;
   char type, line[512], *ptr, *v_ptr;
@@ -176,12 +200,12 @@ void restore_settings()
   W = fopen ("/var/tuxbox/config/enigma/config.restore", "w");
   if (F && W)
     {
-      while ( fgets (line, 512, F) != NULL)
+      while (fgets (line, 512, F) != NULL)
         {
-                      ptr = strstr (line, "\n");
-                      if (ptr)
-                        *ptr = '\0';
-          nr = sscanf ( line, "%c:", &type );
+          ptr = strstr (line, "\n");
+          if (ptr)
+            *ptr = '\0';
+          nr = sscanf (line, "%c:", &type);
           if (nr == 1)
             {
               printf ("L1: (%c) (%s)\n", type, line);
@@ -191,7 +215,8 @@ void restore_settings()
                   *ptr = '\0';
                   ptr++;
                   key = line + 2;
-                  value = ptr; v_ptr = ptr;
+                  value = ptr;
+                  v_ptr = ptr;
                   // printf ("L2: (%c) (%s) (%s)\n", type, key, value);
                   do_restore = 0;
                   if (strncmp ("/elitedvb/audio", key.c_str (), 15) == 0 && v_AV)
@@ -199,16 +224,16 @@ void restore_settings()
                   if (strncmp ("/elitedvb/video", key.c_str (), 15) == 0 && v_AV)
                     do_restore = 1;
                   if (strncmp ("/elitedvb/DVB", key.c_str (), 13) == 0 && v_DVB)
-                  {
-                    delete_lnbs();
-                    do_restore = 1;
-                  }
+                    {
+                      delete_lnbs ();
+                      do_restore = 1;
+                    }
                   if (strncmp ("/elitedvb/network", key.c_str (), 17) == 0 && v_NET)
                     do_restore = 1;
                   if (!do_restore)
                     continue;
-                  fprintf ( W, "%c:%s=%s\n", type, key.c_str(), v_ptr );
-                  printf  ( "%c:%s=%s\n", type, key.c_str(), v_ptr );
+                  fprintf (W, "%c:%s=%s\n", type, key.c_str (), v_ptr);
+                  printf ("%c:%s=%s\n", type, key.c_str (), v_ptr);
 #if 0
                   switch (type)
                     {
@@ -253,10 +278,10 @@ void restore_settings()
       eConfig::getInstance ()->flush ();
 
     }
-      if(W)
-      fclose (W);
-      if(F)
-      fclose (F);
+  if (W)
+    fclose (W);
+  if (F)
+    fclose (F);
 }
 
 void
@@ -310,13 +335,13 @@ WaitWindow::WaitWindow ():eWindow (0)
 void
 WaitWindow::okPressed ()
 {
-  eZap::getInstance()->quit(1);
+  eZap::getInstance ()->quit (1);
 }
 
 void
 WaitWindow::abortPressed ()
 {
-  eZap::getInstance()->quit();
+  eZap::getInstance ()->quit ();
 }
 
 int
@@ -325,9 +350,9 @@ WaitWindow::eventHandler (const eWidgetEvent & e)
   switch (e.type)
     {
     case eWidgetEvent::execBegin:
-      restore_settings();
-      ok->show();
-      abort->show();
+      restore_settings ();
+      ok->show ();
+      abort->show ();
       break;
 
     default:
