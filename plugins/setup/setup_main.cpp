@@ -27,6 +27,10 @@
 #include "setup_extra.h"
 #include "setup_rc.h"
 #include "setup_restore.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 
 #ifdef DM7020
 #define TITLE "Setup plugin (v0.03)"
@@ -152,12 +156,38 @@ eMySettings::emu_setup ()
 void
 eMySettings::ipkg_setup ()
 {
-  printf ("eMySettings::ipkg_setup()\n");
+  int res;
+  struct stat st;
+  char exe[256];
+
   hide ();
-  ipkgSetup setup;
-  setup.show ();
-  setup.exec ();
-  setup.hide ();
+  printf ("eMySettings::ipkg_setup()\n");
+  if (stat ("/usr/lib/ipkg/info/setup-plugin.control", &st) != 0)
+    {
+      eMessageBox msg (_("Setup plugin is not installed as a package, this is needed for package manager.\nInstall now?"),
+                       _("Install Setup plugin as package?"), eMessageBox::btYes | eMessageBox::btCancel, eMessageBox::btCancel);
+      msg.show ();
+      res = msg.exec ();
+      msg.hide ();
+      if (res == eMessageBox::btYes)
+        {
+  sprintf (exe, "sh -c \"ipkg update ; ipkg install -force-overwrite setup-plugin\"");
+  Executable = exe;
+  strcpy (RUN_MESSAGE, "");
+  RunApp run;
+  run.show ();
+  run.exec ();
+  run.hide ();
+        }
+    }
+
+  if (stat ("/usr/lib/ipkg/info/setup-plugin.control", &st) == 0)
+    {
+      ipkgSetup setup;
+      setup.show ();
+      setup.exec ();
+      setup.hide ();
+    }
   show ();
 }
 #endif // SETUP_IPKG

@@ -66,6 +66,7 @@ eSetupWindow (_("Package Manager"), 10, 350)
           fclose (F);
         }
     }
+
   CONNECT ((new
             eListBoxEntryMenu (&list, _("Update package database"),
                                eString ().sprintf ("(%d) %s", ++entry, _("Run ipkg update, to update package database"))))->selected, ipkgSetup::ipkg_update);
@@ -305,15 +306,15 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
           res = confirm.do_remove;
           strcpy (ipkg_cmd, "remove");
           if (confirm.do_install && confirm.do_remove)
-          {
-            strcpy (ipkg_cmd, "-force-reinstall install");
-            get_package_details (file, NULL, section);
-            if ((strcmp (package, "setup-plugin") == 0) || (strcmp (section, "settings") == 0) || confirm.v_force_overwrite)
             {
-              sprintf (exe, "%s %s", "-force-overwrite", ipkg_cmd);
-              strcpy (ipkg_cmd, exe);
+              strcpy (ipkg_cmd, "-force-reinstall install");
+              get_package_details (file, NULL, section);
+              if ((strcmp (package, "setup-plugin") == 0) || (strcmp (section, "settings") == 0) || confirm.v_force_overwrite)
+                {
+                  sprintf (exe, "%s %s", "-force-overwrite", ipkg_cmd);
+                  strcpy (ipkg_cmd, exe);
+                }
             }
-          }
           sprintf (exe, "ipkg %s %s", ipkg_cmd, package);
         }
       else
@@ -333,13 +334,13 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
         }
       if (res)
         {
-          if ( (qwerty == 0) && (strcmp (section, "settings") == 0) && (stat ("/etc/.settings_package", &st) == 0) )
-          {
-            eMessageBox msg (_("please wait removing old settings package.\n"), _("please wait..."), 0);
-            msg.show ();
-            system ( "ipkg remove `cat /etc/.settings_package`" );
-            msg.hide ();
-          }
+          if ((qwerty == 0) && (strcmp (section, "settings") == 0) && (stat ("/etc/.settings_package", &st) == 0))
+            {
+              eMessageBox msg (_("please wait removing old settings package.\n"), _("please wait..."), 0);
+              msg.show ();
+              system ("ipkg remove `cat /etc/.settings_package`");
+              msg.hide ();
+            }
           Executable = exe;
           printf ("E: %s\n", Executable);
           strcpy (RUN_MESSAGE, "");
@@ -358,7 +359,7 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
 ipkgConfirm::ipkgConfirm ():
 eWindow (0)
 {
-  printf ( "ipkgConfirm::ipkgConfirm action=%d\n", qwerty );
+  printf ("ipkgConfirm::ipkgConfirm action=%d\n", qwerty);
   do_install = 0;
   do_remove = 0;
   v_force_overwrite = 0;

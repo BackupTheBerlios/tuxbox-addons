@@ -52,7 +52,7 @@ RunApp::RunApp ():
 eWindow (0)
 {
   //setText(_("Running script"));
-  setText (eString ().sprintf ("Please wait runnig: %s", Executable));
+  setText (eString ().sprintf ("%s is running, please wait", Executable));
   cmove (ePoint (50, 100));
   cresize (eSize (630, 400));
 
