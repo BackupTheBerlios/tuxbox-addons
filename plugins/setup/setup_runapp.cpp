@@ -60,7 +60,7 @@ eWindow (0)
   bClose->setText (_("Close"));
   bClose->setShortcut ("green");
   bClose->setShortcutPixmap ("green");
-  bClose->move (ePoint (20, 320));
+  bClose->move (ePoint (440, 10));
   bClose->resize (eSize (170, 40));
   bClose->loadDeco ();
   bClose->hide ();
@@ -124,10 +124,24 @@ RunApp::eventHandler (const eWidgetEvent & e)
 void
 RunApp::getData (eString str)
 {
+  char *begin, *ptr;
+  int c;
+
   // printf( "RunApp::getData\n");
   eString buf;
-  buf = lState->getText ();
-  lState->setText (buf + str);
+  buf = lState->getText () + str;
+  begin = (char *)buf.c_str();
+  ptr = begin + strlen(begin);
+  c = 0;
+  while (ptr > begin && c <= 17)
+  {
+    ptr--;
+    if (ptr[0] == '\n')
+      c++;
+  }
+  if(ptr[0] == '\n')
+    ptr++;
+  lState->setText (ptr);
   output = 1;
 }
 
