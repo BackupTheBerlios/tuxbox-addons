@@ -125,6 +125,7 @@ eWindow (0)
 
   softcam2all = new eButton (this);
   softcam2all->setText (_("Soft -> all"));
+  softcam2all->setShortcut ("yellow");
   softcam2all->setShortcutPixmap ("yellow");
   softcam2all->move (ePoint (20, 100));
   softcam2all->resize (eSize (170, 40));

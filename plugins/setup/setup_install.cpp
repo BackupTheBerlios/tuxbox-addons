@@ -164,7 +164,7 @@ InstallSw::dlPressed ()
   listb->resize (eSize (500, 300));
   listb->loadDeco ();
 
-  system ("/var/bin/install.sh get_packagelist");
+  system ("/bin/install.sh get_packagelist");
 
   F = fopen ("/var/tmp/package_list.txt", "r");
   if (F)
@@ -261,14 +261,14 @@ InstallSw::do_install (eListBoxEntryText * item)
   if (item)
     {
       eString abc = item->getText ();
-      sprintf (exe, "/var/bin/install.sh download %s", abc.c_str ());
+      sprintf (exe, "/bin/install.sh download %s", abc.c_str ());
       dlWindow dl;
       dl.show ();
       dl.exec ();
       dl.hide ();
       if (dlOk)
         {
-          sprintf (exe, "/var/bin/install.sh install %s", abc.c_str ());
+          sprintf (exe, "/bin/install.sh install %s", abc.c_str ());
           Executable = exe;
           printf ("E: %s\n", Executable);
           strcpy (RUN_MESSAGE, "Installing software, please wait this may take a minute");
@@ -281,7 +281,7 @@ InstallSw::do_install (eListBoxEntryText * item)
         }
       else
         {
-          sprintf (exe, "/var/bin/install.sh cleanup");
+          sprintf (exe, "/bin/install.sh cleanup");
           system (exe);
         }
     }
@@ -295,8 +295,8 @@ RemoveSw::do_remove (eListBoxEntryText * item)
     {
       char exe[256];
       eString abc = item->getText ();
-      sprintf (exe, "/var/bin/install.sh remove %s", abc.c_str ());
-      //sprintf(exe, "/var/bin/install.sh install var_gbox -" );
+      sprintf (exe, "/bin/install.sh remove %s", abc.c_str ());
+      //sprintf(exe, "/bin/install.sh install var_gbox -" );
       Executable = exe;
       printf ("E: %s\n", Executable);
       strcpy (RUN_MESSAGE, "Removing software, please wait");
