@@ -110,8 +110,7 @@ RemoveSw::RemoveSw ():eWindow (0)
     {
       while (fgets (line, 256, F) != NULL)
         {
-          new
-          eListBoxEntryText (listb, _(line), (void *) entry);
+          new eListBoxEntryText (listb, _(line), (void *) entry);
         }
       fclose (F);
     }
@@ -217,7 +216,8 @@ dlWindow::dlWindow ():eWindow (0)
   app = new eConsoleAppContainer (eString ().sprintf (exe));
   if (!app->running ())
     {
-      eMessageBox msg (_("sorry, cannot find script."), _("sorry, cannot find script."), eMessageBox::btOK | eMessageBox::iconError);
+      eMessageBox
+      msg (_("sorry, cannot find script."), _("sorry, cannot find script."), eMessageBox::btOK | eMessageBox::iconError);
       msg.show ();
       msg.exec ();
       msg.hide ();
