@@ -57,15 +57,6 @@ eSetupWindow (_("Package Manager"), 10, 350)
   int entry = 0;
   FILE *F;
   struct stat st;
-  if (stat ("/etc/ipkg/ronaldd-feed.conf", &st) != 0)
-    {
-      F = fopen ("/etc/ipkg/ronaldd-feed.conf", "w");
-      if (F)
-        {
-          fprintf (F, "src/gz ronaldd http://ronaldd.irde.to/ipkg/feed\n");
-          fclose (F);
-        }
-    }
 
   CONNECT ((new
             eListBoxEntryMenu (&list, _("Update package database"),

@@ -159,9 +159,19 @@ eMySettings::ipkg_setup ()
   int res;
   struct stat st;
   char exe[256];
+  FILE *F;
 
   hide ();
   printf ("eMySettings::ipkg_setup()\n");
+  if (stat ("/etc/ipkg/ronaldd-feed.conf", &st) != 0)
+    {
+      F = fopen ("/etc/ipkg/ronaldd-feed.conf", "w");
+      if (F)
+        {
+          fprintf (F, "src/gz ronaldd http://ronaldd.irde.to/ipkg/feed\n");
+          fclose (F);
+        }
+    }
   if (stat ("/usr/lib/ipkg/info/setup-plugin.control", &st) != 0)
     {
       eMessageBox msg (_("Setup plugin is not installed as a package, this is needed for package manager.\nInstall now?"),
