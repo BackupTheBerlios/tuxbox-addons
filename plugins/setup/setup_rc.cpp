@@ -70,9 +70,9 @@ rc_config::read ()
           // printf( "Q: (%s)\n", buf );
           strcpy (EMU[i], buf);
           i++;
-          RC->no_emu = i;
         }
       fclose (file);
+      RC->no_emu = i;
     }
   else
     {

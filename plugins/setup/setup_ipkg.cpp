@@ -96,10 +96,6 @@ ipkgSetup::ipkg_update ()
   run.show ();
   run.exec ();
   run.hide ();
-  eMessageBox msg (_("please wait building package list.\n"), _("please wait..."), 0);
-  msg.show ();
-  feeds2dir ();
-  msg.hide ();
   show ();
 }
 
@@ -122,10 +118,13 @@ ipkgSetup::ipkg_upgrade ()
 void
 ipkgSetup::ipkg_inst_rem ()
 {
-  struct stat st;
+  struct stat st1, st2;
+  int rv;
   strcpy (dir, "/tmp/feeds");
   hide ();
-  if (stat (dir, &st) != 0)
+  rv = stat (dir, &st1);
+  stat ("/usr/lib/ipkg/lists/official", &st2);
+  if (st1.st_mtime < st2.st_mtime || rv != 0)
     {
       eMessageBox msg (_("please wait building package list.\n"), _("please wait..."), 0);
       msg.show ();

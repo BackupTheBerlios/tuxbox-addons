@@ -213,9 +213,11 @@ void
 eZapEmuSetup::okPressed ()
 {
 #ifdef DEBUG
-  printf ("okPressed: i=%i v=%s v2=%i\n", Enabled, EMU[RC->v_SelectedEmu], RC->v_SelectedEmu);
+  if (RC->no_emu > 0)
+    printf ("okPressed: i=%i v=%s v2=%i\n", Enabled, EMU[RC->v_SelectedEmu], RC->v_SelectedEmu);
 #endif
-  RC->v_SelectedEmu = (int) SelectedEmu->getCurrent ()->getKey ();
+  if (RC->no_emu > 0)
+    RC->v_SelectedEmu = (int) SelectedEmu->getCurrent ()->getKey ();
   if (Serial != NULL)
     v_Serial = (int) Serial->getCurrent ()->getKey ();
   RC->write ();
@@ -274,6 +276,8 @@ void
 eZapEmuSetup::EmuSetup (eListBoxEntryText * item)
 {
   int ok = 0;
+  if (!item)
+    return;
   eString str = item->getText ();
 #ifdef SETUP_CS
   if (strstr (str.c_str (), "_cs"))
