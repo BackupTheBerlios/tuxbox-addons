@@ -29,7 +29,7 @@
 #include "setup_restore.h"
 
 #ifdef DM7020
-#define TITLE "Setup plugin (v0.01)"
+#define TITLE "Setup plugin (v0.02)"
 #else
 #define TITLE "Setup plugin (v0.19)"
 #endif

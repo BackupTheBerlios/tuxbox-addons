@@ -29,7 +29,8 @@ DEFINES  = $(DBG) -DDM7020 -DSETUP_EMU -DSETUP_USB -DSETUP_CS -DSETUP_GBOX -DMOU
 OBJECTS  = setup_runapp.o setup_extra.o setup_rc.o setup_services.o setup_emu.o setup_usb.o setup_main.o \
 	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o setup_ipkg.o feeds2dir.o
 PLUGIN    = setup7020
-PACKAGE = package
+PACKAGE = package feeds2dir
+F2D_O = feeds2dir.o feeds2dir_main.o
 endif
 
 INCLUDES = -I$(CDK_SRC)/apps/tuxbox/enigma/include -I$(CDKROOT)/include -I$(CDKROOT)/include/sigc++-1.2 \
@@ -37,13 +38,16 @@ INCLUDES = -I$(CDK_SRC)/apps/tuxbox/enigma/include -I$(CDKROOT)/include -I$(CDKR
 	   -I$(CDK_SRC)/apps/tuxbox/plugins/include -I$(CDK_SRC)/apps/tuxbox/enigma/src -I.
 
 CFLAGS   = $(DEFINES) $(INCLUDES) -fno-rtti -fno-exceptions -Wall -O2 -mcpu=405 -mmultiple -mstring -g -ggdb3 -pipe
+#CFLAGS   = $(DEFINES) $(INCLUDES) -Wall -O2 -mcpu=405
 
-
+feeds2dir: $(F2D_O)
+	$(CXX) -Wall -o feeds2dir $(F2D_O)
 
 all: $(PLUGIN).so $(PACKAGE)
 
 $(PLUGIN).so: $(OBJECTS)
 	$(CXX) -shared -Wall -Os -mcpu=405 -mmultiple -mstring -g -ggdb3 -pipe   -o $(PLUGIN).so  $(OBJECTS)
+	#$(CXX) -shared -Wall -o $(PLUGIN).so $(OBJECTS)
 	$(STRIP) --remove-section=.note --remove-section=.comment $(PLUGIN).so
 
 package:
@@ -56,6 +60,7 @@ package:
 	cp files/postinst tmp_root/CONTROL
 	cp files/mk_emulist.sh tmp_root/usr/bin
 	cp files/reset_emu.sh tmp_root/usr/bin
+	cp files/mk_ronaldd_image.sh tmp_root/usr/bin
 	ipkg-build -o 0 -g 0 tmp_root
 
 .cpp.o:
@@ -71,8 +76,9 @@ ifeq ($(BOX),DM7000)
 	cp setup7.so setup7.cfg /net/tuxbox/emu_root$(KERNEL)/lib/tuxbox/plugins/
 endif
 ifeq ($(BOX),DM7020)
-	ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).*
+	ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
 	#ncftpput -u root -p dreambox dm7020 /tmp setup*.ipk
+	cp setup*ipk /local/web/dreambox/root/ipkg/feed
 endif
 ifeq ($(BOX),DM5600)
 	cp setup5.so setup5.cfg /net/tuxbox/emu_dm5600_root/lib/tuxbox/plugins/

@@ -35,6 +35,7 @@ private:
   void ipkg_update ();
   void ipkg_upgrade ();
   void ipkg_inst_rem ();
+  void ipkg2ronaldd ();
 public:
     ipkgSetup ();
 };

@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <dirent.h>
 
 #define TEMPFILE "/tmp/TempFile"
 
@@ -30,11 +31,18 @@ void
 feed2dir (char *src)
 {
   FILE *F, *F2 = NULL;
-  char line[2048], package[128], section[128], cmd[128];
-  char dir[128], file[128];
+  char line[2048], package[512], section[512], cmd[512];
+  char dir[512], file[512], feed[128];
   char *ptr, *two;
   int len;
   struct stat s;
+
+  printf ("feed2dir: %s\n", src);
+
+  if (strncmp(basename (src), "official-updated-ronaldd", 24) == 0)
+    strcpy(feed, "official");
+  else
+    strcpy(feed, basename (src) );
 
   unlink (TEMPFILE);
   F = fopen (src, "r");
@@ -42,6 +50,8 @@ feed2dir (char *src)
     {
       while (fgets (line, sizeof (line), F) != NULL)
         {
+          if (strlen (line) > 2000)
+            printf ("LONG: %s\n", line);
           if ((ptr = strchr (line, '\n')) != NULL)
             {
               *ptr = '\0';
@@ -55,7 +65,7 @@ feed2dir (char *src)
                 {
                   fclose (F2);
                   F2 = NULL;
-                  sprintf (dir, "/tmp/feeds/%s/%s", basename (src), section);
+                  sprintf (dir, "/tmp/feeds/%s/%s", feed, section);
                   if (stat (dir, &s) < 0)
                     {
                       sprintf (cmd, "mkdir -p %s", dir);
@@ -99,7 +109,26 @@ feed2dir (char *src)
 void
 feeds2dir ()
 {
+  FILE *F;
+  char list[128], *ptr;
+  char line[128];
+
   system ("rm -rf /tmp/feeds");
-  feed2dir ("/usr/lib/ipkg/lists/official");
-  feed2dir ("/usr/lib/ipkg/lists/ronaldd");
+  system ("grep -h ^src /etc/ipkg/*.conf |awk '{print $2}' >/tmp/lists");   // Not nice
+  F = fopen ("/tmp/lists", "r");
+  if (F)
+    {
+      while (fgets (line, sizeof (line), F) != NULL)
+        {
+          if ((ptr = strchr (line, '\n')) != NULL)
+            {
+              *ptr = '\0';
+            }
+          sprintf (list, "/usr/lib/ipkg/lists/%s", line);
+          // if ( strncmp ( "official-updated-ronaldd", line, 24) != 0 )
+            feed2dir (list);
+        }
+      fclose (F);
+    }
+  unlink ("/tmp/lists");
 }

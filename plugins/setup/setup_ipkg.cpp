@@ -73,6 +73,13 @@ eSetupWindow (_("Package Manager"), 10, 350)
   CONNECT ((new
             eListBoxEntryMenu (&list, _("Install/remove packages"),
                                eString ().sprintf ("(%d) %s", ++entry, _("Install/remove packages"))))->selected, ipkgSetup::ipkg_inst_rem);
+  if (stat ("/etc/ipkg/official-updated-ronaldd-feed.conf", &st) != 0)
+    {
+      CONNECT ((new
+                eListBoxEntryMenu (&list, _("Upgrade to Ronaldd image"),
+                                   eString ().sprintf ("(%d) %s", ++entry, _("Select to upgrade official images to ronaldd images"))))->selected,
+               ipkgSetup::ipkg2ronaldd);
+    }
 }
 
 void
@@ -135,16 +142,68 @@ ipkgSetup::ipkg_inst_rem ()
   show ();
 }
 
+void
+ipkgSetup::ipkg2ronaldd ()
+{
+  int res;
+  eMessageBox msg (_("Upgrade to Ronaldd image?"),
+                   _("This wil upgrade some original packages (enigma and others) to changed versions"), eMessageBox::btYes | eMessageBox::btCancel,
+                   eMessageBox::btCancel);
+  msg.show ();
+  res = msg.exec ();
+  msg.hide ();
+  if (res == eMessageBox::btYes)
+    {
+      strcpy (exe, "mk_ronaldd_image.sh");
+      Executable = exe;
+      hide ();
+      RunApp run;
+      run.show ();
+      run.exec ();
+      run.hide ();
+      show ();
+    }
+}
+
+
+void
+get_package_details (char *file, char *version)
+{
+  FILE *F;
+  char line[2048], *ptr;
+
+  strcpy (version, "?");
+
+  F = fopen (file, "r");
+  if (F)
+    {
+      while (fgets (line, sizeof (line), F) != NULL)
+        {
+          if ((ptr = strchr (line, '\n')) != NULL)
+            {
+              *ptr = '\0';
+            }
+          if (strncmp (line, "Version: ", 9) == 0)
+            {
+              if ((ptr = strchr (line, ' ')) != NULL)
+                {
+                  ptr++;
+                  strcpy (version, ptr);
+                }
+            }
+        }
+    }
+}
 
 ipkgInstRem::ipkgInstRem ():
-eSetupWindow (_("Package Manager"), 10, 350)
+eSetupWindow (_("Package Manager"), 10, 450)
 {
   struct dirent **namelist;
   int n, i;
-  char name[128], file[320];
+  char name[128], file[320], version[64];
   struct stat st;
 
-  move (ePoint (180, 100));
+  move (ePoint (130, 100));
 
   listbox = new eListBox < eListBoxEntryText > (this);
   listbox->setText (_("Remove Software"));
@@ -177,7 +236,8 @@ eSetupWindow (_("Package Manager"), 10, 350)
             }
           else
             {
-              sprintf (name, "%s", namelist[i]->d_name);
+              get_package_details (file, version);
+              sprintf (name, "%s - %s", namelist[i]->d_name, version);
               sprintf (file, "/usr/lib/ipkg/info/%s.control", namelist[i]->d_name);
               if (stat (file, &st) == 0)
                 {
@@ -200,9 +260,9 @@ void
 ipkgInstRem::okPressed (eListBoxEntryText * item)
 {
   eString tmp;
-  char file[320], ipkg_cmd[64];
+  char file[320], package[256], ipkg_cmd[64];
   struct stat st;
-  int res;
+  int res, i;
   tmp = item->getText ();
   if (tmp.c_str ()[0] == '[')
     {
@@ -218,7 +278,11 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
     }
   else
     {
-      sprintf (file, "/usr/lib/ipkg/info/%s.control", tmp.c_str ());
+      strcpy (package, tmp.c_str ());
+      for (i = 0; i < strlen (package); i++)
+        if (package[i] == ' ' && package[i + 1] == '-' && package[i + 2] == ' ')
+          package[i] = '\0';
+      sprintf (file, "/usr/lib/ipkg/info/%s.control", package);
       if (stat (file, &st) == 0)
         {
           eMessageBox msg (_("Are you SURE to remove this package?\n"),
@@ -226,7 +290,7 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
           msg.show ();
           res = msg.exec ();
           msg.hide ();
-          sprintf (exe, "ipkg remove %s", tmp.c_str ());
+          sprintf (exe, "ipkg remove %s", package);
         }
       else
         {
@@ -235,11 +299,11 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
           msg.show ();
           res = msg.exec ();
           msg.hide ();
-          if (strcmp (tmp.c_str (), "setup-plugin") == 0)
+          if (strcmp (package, "setup-plugin") == 0)
             strcpy (ipkg_cmd, "-force-overwrite install");
           else
             strcpy (ipkg_cmd, "install");
-          sprintf (exe, "ipkg %s %s", ipkg_cmd, tmp.c_str ());
+          sprintf (exe, "ipkg %s %s", ipkg_cmd, package);
         }
       if (res == eMessageBox::btYes)
         {
