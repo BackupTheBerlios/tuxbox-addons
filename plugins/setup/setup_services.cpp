@@ -72,23 +72,25 @@ eWindow (0)
   eStartServer->setHelpText (_("start/do not start Card Sharing Server"));
   CONNECT (eStartServer->checked, ServicesSetup::EmuStartServerChanged);
 
+#if 0
   eStartDhcp = new eCheckbox (this, RC->StartDhcp, 1);
   eStartDhcp->setText (_("Use DHCP"));
   eStartDhcp->move (ePoint (10, 50));
   eStartDhcp->resize (eSize (170, 35));
   eStartDhcp->setHelpText (_("start/do not start DHCP Client daemon"));
   CONNECT (eStartDhcp->checked, ServicesSetup::EmuStartDhcpChanged);
+#endif
 
   eStartCron = new eCheckbox (this, RC->StartCron, 1);
   eStartCron->setText (_("Start crond"));
-  eStartCron->move (ePoint (10, 90));
+  eStartCron->move (ePoint (10, 50));
   eStartCron->resize (eSize (170, 35));
   eStartCron->setHelpText (_("start/do not start crond the time daemon"));
   CONNECT (eStartCron->checked, ServicesSetup::EmuStartCronChanged);
 
   eStartSamba = new eCheckbox (this, RC->StartSamba, 1);
   eStartSamba->setText (_("Start Samba"));
-  eStartSamba->move (ePoint (10, 130));
+  eStartSamba->move (ePoint (10, 90));
   eStartSamba->resize (eSize (170, 35));
   eStartSamba->setHelpText (_("start/do not start the samba daemons"));
   CONNECT (eStartSamba->checked, ServicesSetup::EmuStartSambaChanged);
@@ -107,6 +109,7 @@ eWindow (0)
       CONNECT (cardinfo->selected, ServicesSetup::cardinfoPressed);
     }
 
+#if 0
   v_IpInfo = IpInfo ();
   if (v_IpInfo == 0)
     {
@@ -120,6 +123,7 @@ eWindow (0)
       ipinfo->loadDeco ();
       CONNECT (ipinfo->selected, ServicesSetup::ipinfoPressed);
     }
+#endif
 
   ok = new eButton (this);
   ok->setText (_("save"));

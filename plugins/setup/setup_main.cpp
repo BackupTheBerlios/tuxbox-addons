@@ -26,7 +26,7 @@
 #include "setup_extra.h"
 #include "setup_rc.h"
 
-#define TITLE "Setup plugin (v0.16)"
+#define TITLE "Setup plugin (v0.17)"
 
 #include <lib/gui/emessage.h>
 #include <lib/gui/listbox.h>
