@@ -219,7 +219,7 @@ eZapEmuSetup::okPressed ()
   if (Serial != NULL)
     v_Serial = (int) Serial->getCurrent ()->getKey ();
   RC->write ();
-  system ("killall sleep");
+  system ("touch /var/tmp/.emu_restart ; killall sleep");
   close (0);
 #ifdef DEBUG
   printf ("END okPressed\n");

@@ -27,7 +27,7 @@
 #include "setup_rc.h"
 #include "setup_restore.h"
 
-#define TITLE "Setup plugin (v0.18)"
+#define TITLE "Setup plugin (v0.19)"
 
 #include <lib/gui/emessage.h>
 #include <lib/gui/listbox.h>
