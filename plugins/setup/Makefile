@@ -11,7 +11,8 @@ DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_CS -DSETUP_GBOX -DDM5600
 OBJECTS  = setup_5600.o setup_usb.o setup_main.o setup_cs.o setup_gbox.o setup_rdg.o
 else
 BOX = DM7000
-DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_GBOX -DSETUP_CS -DSETUP_RESTORE \
+# $(DBG) -DSETUP_GBOX
+DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_CS -DSETUP_GBOX -DSETUP_RESTORE \
 		-DDM7000 -DMOUNT_UNMOUNT #-DSETUP_RDG
 OBJECTS  = setup_runapp.o setup_extra.o setup_rc.o setup_services.o setup_emu.o setup_usb.o setup_main.o \
 	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o
@@ -21,7 +22,7 @@ INCLUDES = -I$(CDK_SRC)/apps/tuxbox/enigma/include -I$(CDKROOT)/include -I$(CDKR
 	   -I$(CDKROOT)/lib/sigc++-1.2/include -I$(CDK_SRC)/apps/tuxbox/enigma -I$(CDK_SRC)/apps/misc/libs/libxmltree \
 	   -I$(CDK_SRC)/apps/tuxbox/plugins/include -I$(CDK_SRC)/apps/tuxbox/enigma/src -I.
 
-CFLAGS   = $(DEFINES) $(INCLUDES) -fno-rtti -fno-exceptions -Wall -O2 -mcpu=405 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe
+CFLAGS   = $(DEFINES) $(INCLUDES) -fno-rtti -fno-exceptions -Wall -O2 -mcpu=405 -mmultiple -mstring -g -ggdb3 -pipe
 
 
 ifeq ($(BOX),DM7000)
@@ -31,11 +32,11 @@ all: setup5.so
 endif
 
 setup7.so: .7 $(OBJECTS)
-	$(CXX) -shared -Wall -Os -mcpu=405 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe   -o setup7.so  $(OBJECTS)
+	$(CXX) -shared -Wall -Os -mcpu=405 -mmultiple -mstring -g -ggdb3 -pipe   -o setup7.so  $(OBJECTS)
 	$(STRIP) --remove-section=.note --remove-section=.comment setup7.so
 
 setup5.so: .5 $(OBJECTS)
-	$(CXX) -shared -Wall -Os -mcpu=405 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe   -o setup5.so  $(OBJECTS)
+	$(CXX) -shared -Wall -Os -mcpu=405 -mmultiple -mstring -g -ggdb3 -pipe   -o setup5.so  $(OBJECTS)
 	$(STRIP) --remove-section=.note --remove-section=.comment setup5.so
 
 .7:
