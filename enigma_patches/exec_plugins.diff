@@ -1,0 +1,40 @@
+Index: src/enigma_main.cpp
+===================================================================
+RCS file: /cvs/tuxbox/apps/tuxbox/enigma/src/enigma_main.cpp,v
+retrieving revision 1.201
+diff -u -r1.201 enigma_main.cpp
+--- a/src/enigma_main.cpp	1 Jul 2004 13:50:32 -0000	1.201
++++ b/src/enigma_main.cpp	16 Jul 2004 21:08:52 -0000
+@@ -4342,7 +4342,31 @@
+ {
+ 	hide();
+ 	eZapPlugins plugins(2);
+-	plugins.exec();
++	plugins.execPluginByName("setup7.cfg");
++	FILE *F = fopen ( "/tmp/reloadUserBouquets", "r" );
++	if (F)
++	{
++		printf ( "reloadsettings\n" );
++		fclose(F);
++#if 1
++ 		eMessageBox msg (_("UserBouqets will be reloaded, after presssing ok enigma might not respond for about 1 minute"), _("Reloading UserBouqets"), eMessageBox::btOK | eMessageBox::iconError);
++        	msg.show ();
++        	msg.exec ();
++        	msg.hide ();
++#endif
++        	// if (eDVB::getInstance()->settings)
++		if (1)
++        	{
++                	eDVB::getInstance()->settings->loadServices();
++                	eDVB::getInstance()->settings->loadBouquets();
++			eZapMain::getInstance()->loadUserBouquets();
++                	eZap::getInstance()->getServiceSelector()->actualize();
++                	eServiceReference::loadLockedList((eZapMain::getInstance()->getEplPath()+"/services.locked").c_str());
++        	}
++
++		unlink("/tmp/reloadUserBouquets" );
++		printf ( "Done reloadsettings\n" );
++	}
+ 	if (!doHideInfobar())
+ 		show();
+ }

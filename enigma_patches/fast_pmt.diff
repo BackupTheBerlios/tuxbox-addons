@@ -1,0 +1,20 @@
+Index: lib/dvb/si.cpp
+===================================================================
+RCS file: /cvs/tuxbox/apps/tuxbox/enigma/lib/dvb/si.cpp,v
+retrieving revision 1.36
+diff -u -r1.36 si.cpp
+--- a/lib/dvb/si.cpp	1 Jul 2004 17:41:00 -0000	1.36
++++ b/lib/dvb/si.cpp	16 Jul 2004 20:37:14 -0000
+@@ -1266,6 +1266,12 @@
+ 
+ int PMT::data(__u8 *data)
+ {
++// pmt.tmp addon START ----------------------------
++	FILE *fout;
++	fout=fopen("/var/tmp/pmt.TMP","wt");
++	fwrite(data,((data[1]&0xf)<<8)+data[2]+3,1,fout);
++	fclose(fout);
++	// pmt.tmp addon END ------------------------------
+ 	pmt_struct *pmt=(pmt_struct*)data;
+ 	version_number=pmt->version_number;
+ 	program_number=HILO(pmt->program_number);
