@@ -17,33 +17,46 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __setup_main_h
-#define __setup_main_h
+#ifndef __setup_services_h
+#define __setup_services_h
 
-#include <setup_window.h>
 #include <lib/gui/ewindow.h>
 #include <lib/gui/listbox.h>
 #include <lib/gui/statusbar.h>
 #include <lib/base/console.h>
-#include <lib/gui/ebutton.h>
 
 class eButton;
+class eCheckbox;
+class eComboBox;
+class eNumber;
+class eTextInputField;
+class rc_config;
 
-class eMySettings:public eSetupWindow
+class RestoreSetup:public eWindow
 {
+  eButton *ok, *abort;
+  eCheckbox *DVB, *AV, *NET;
+  eStatusBar *statusbar;
 private:
-  void my_harddisc_setup ();
-  void mount_usb ();
-  void umount_usb ();
-  void sw_install ();
-  void sw_remove ();
-  void emu_setup ();
-  void extra_setup ();
-  void services_setup ();
-  void run_plugins ();
-  void restore_setup ();
+  void RestoreDVBchanged (int i);
+  void RestoreNETchanged (int i);
+  void RestoreAVchanged (int i);
+  void okPressed ();
+  void abortPressed ();
 public:
-    eMySettings ();
+    RestoreSetup ();
 };
 
-#endif /* __my_system_settings_h */
+class WaitWindow:public eWindow
+{
+  eButton *abort, *ok;
+  eConsoleAppContainer *app;
+  int eventHandler (const eWidgetEvent & e);
+private:
+  void abortPressed ();
+  void okPressed ();
+public:
+    WaitWindow ();
+};
+
+#endif

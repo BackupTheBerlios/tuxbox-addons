@@ -25,6 +25,7 @@
 #include "setup_install.h"
 #include "setup_extra.h"
 #include "setup_rc.h"
+#include "setup_restore.h"
 
 #define TITLE "Setup plugin (v0.17)"
 
@@ -85,6 +86,11 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
            eMySettings::sw_install);
   CONNECT ((new eListBoxEntryMenu (&list, _("Remove installed software"), eString ().sprintf ("(%d) %s", ++entry, _("Remove installed software"))))->selected,
            eMySettings::sw_remove);
+#endif
+
+#ifdef SETUP_RESTORE
+  CONNECT ((new eListBoxEntryMenu (&list, _("Restore Settings"), eString ().sprintf ("(%d) %s", ++entry, _("open Restore Settings window"))))->selected,
+           eMySettings::restore_setup);
 #endif
 
 #ifdef MOUNT_UNMOUNT
@@ -166,6 +172,20 @@ eMySettings::my_harddisc_setup ()
   show ();
 }
 #endif // SETUP_USB
+
+#ifdef SETUP_RESTORE
+void
+eMySettings::restore_setup ()
+{
+  printf ("eMySettings::restore_setup()\n");
+  hide ();
+  RestoreSetup setup;
+  setup.show ();
+  setup.exec ();
+  setup.hide ();
+  show ();
+}
+#endif // SETUP_RESTORE
 
 #ifdef SETUP_INST
 void

@@ -2,16 +2,18 @@ CDK_SRC ?= $(HOME)/tuxbox/dreambox
 CDKROOT ?= /net/tuxbox/dreambox/cdkroot
 CROSS    = powerpc-tuxbox-linux-gnu-
 CXX      = $(CROSS)g++
+STRIP    = $(CROSS)strip
+DBG      = -DDEBUG
 
 ifeq ($b,5)
 BOX = DM5600
-DEFINES  = -DSETUP_EMU -DSETUP_CS -DSETUP_GBOX -DDM5600
+DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_CS -DSETUP_GBOX -DDM5600
 OBJECTS  = setup_5600.o setup_usb.o setup_main.o setup_cs.o setup_gbox.o setup_rdg.o
 else
 BOX = DM7000
-DEFINES  = -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_GBOX -DSETUP_CS -DDM7000
+DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_GBOX -DSETUP_CS -DSETUP_RESTORE -DDM7000 #-DSETUP_RDG
 OBJECTS  = setup_runapp.o setup_extra.o setup_rc.o setup_services.o setup_emu.o setup_usb.o setup_main.o \
-	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o
+	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o
 endif
 
 INCLUDES = -I$(CDK_SRC)/apps/tuxbox/enigma/include -I$(CDKROOT)/include -I$(CDKROOT)/include/sigc++-1.2 \
@@ -29,11 +31,11 @@ endif
 
 setup7.so: .7 $(OBJECTS)
 	$(CXX) -shared -Wall -Os -mcpu=823 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe   -o setup7.so  $(OBJECTS)
-	powerpc-tuxbox-linux-gnu-strip setup7.so
+	$(STRIP) --remove-section=.note --remove-section=.comment setup7.so
 
 setup5.so: .5 $(OBJECTS)
 	$(CXX) -shared -Wall -Os -mcpu=823 -msoft-float -mmultiple -mstring -g -ggdb3 -pipe   -o setup5.so  $(OBJECTS)
-	powerpc-tuxbox-linux-gnu-strip setup5.so
+	$(STRIP) --remove-section=.note --remove-section=.comment setup5.so
 
 .7:
 	$(MAKE) clean
