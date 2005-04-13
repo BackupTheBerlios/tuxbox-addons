@@ -49,6 +49,8 @@ char exe[256];
 char dir[256];
 int InFileBrowser;
 int qwerty;
+extern time_t time_stamp;
+extern time_t time_stamp_enigma;
 
 ipkgSetup::ipkgSetup ():
 eSetupWindow (_("Package Manager"), 10, 350)
@@ -56,6 +58,12 @@ eSetupWindow (_("Package Manager"), 10, 350)
   move (ePoint (180, 100));
   int entry = 0;
   struct stat st;
+
+  /*if (stat ("/usr/bin/enigma", &st) == 0 )
+    time_stamp_enigma = st.st_mtime;
+  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st) == 0 )
+    time_stamp = st.st_mtime;
+  */
 
   CONNECT ((new
             eListBoxEntryMenu (&list, _("Update package database"),
@@ -93,6 +101,7 @@ ipkgSetup::ipkg_update ()
 void
 ipkgSetup::ipkg_upgrade ()
 {
+  struct stat st1;
   sprintf (exe, "ipkg upgrade");
   Executable = exe;
   printf ("E: %s\n", Executable);
@@ -104,6 +113,12 @@ ipkgSetup::ipkg_upgrade ()
   run.exec ();
   run.hide ();
   show ();
+  if (stat ("/usr/bin/enigma", &st1) == 0 )
+    if (time_stamp_enigma != st1.st_mtime)
+      close(0);
+  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0 )
+    if (time_stamp != st1.st_mtime)
+      close(0);
 }
 
 void
@@ -131,12 +146,19 @@ ipkgSetup::ipkg_inst_rem ()
       win.exec ();
       win.hide ();
     }
+  if (stat ("/usr/bin/enigma", &st1) == 0 )
+    if (time_stamp_enigma != st1.st_mtime)
+      close(0);
+  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0 )
+    if (time_stamp != st1.st_mtime)
+      close(0);
   show ();
 }
 
 void
 ipkgSetup::ipkg2ronaldd ()
 {
+  struct stat st1;
   int res;
   eMessageBox
     msg (_
@@ -147,8 +169,10 @@ ipkgSetup::ipkg2ronaldd ()
   msg.hide ();
   if (res == eMessageBox::btYes)
     {
-      strcpy (exe, "mk_ronaldd_image.sh");
+      sprintf ( exe, "sh -c /usr/bin/mk_ronaldd_image.sh" );
       Executable = exe;
+      printf ("E: %s\n", Executable);
+      strcpy (RUN_MESSAGE, "");
       hide ();
       RunApp run;
       run.show ();
@@ -156,6 +180,12 @@ ipkgSetup::ipkg2ronaldd ()
       run.hide ();
       show ();
     }
+  if (stat ("/usr/bin/enigma", &st1) == 0 )
+    if (time_stamp_enigma != st1.st_mtime)
+      close(0);
+  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0 )
+    if (time_stamp != st1.st_mtime)
+      close(0);
 }
 
 

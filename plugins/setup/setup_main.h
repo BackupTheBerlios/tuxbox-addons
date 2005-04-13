@@ -26,6 +26,9 @@
 #include <lib/gui/statusbar.h>
 #include <lib/base/console.h>
 #include <lib/gui/ebutton.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 class eButton;
 
@@ -43,6 +46,8 @@ private:
   void services_setup ();
   void run_plugins ();
   void restore_setup ();
+  // time_t time_stamp;
+  // time_t time_stamp_enigma;
 public:
     eMySettings ();
 };

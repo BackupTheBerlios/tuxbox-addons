@@ -26,6 +26,7 @@
 #include <lib/gui/statusbar.h>
 #include <lib/base/console.h>
 #include <lib/gui/ebutton.h>
+#include <time.h>
 
 class eButton;
 
@@ -36,6 +37,8 @@ private:
   void ipkg_upgrade ();
   void ipkg_inst_rem ();
   void ipkg2ronaldd ();
+  // time_t time_stamp;
+  // time_t time_stamp_enigma;
 public:
     ipkgSetup ();
 };

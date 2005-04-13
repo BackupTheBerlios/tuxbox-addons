@@ -73,13 +73,16 @@ restart_emu ()
           printf ("Stop\n");
           message ("Stopping+cam+daemons", 2);
           system ("sh -c \"ls /etc/init.d/emu_* |while read x ; do sh \\$x stop ; done\"");
+          system ("sh -c \"ls /etc/init.d/emu_* |while read x ; do sh \\$x stop ; done\"");
           unlink ("/etc/rcS.d/S40emu");
+          unlink ("/var/tmp/camd.socket");
           sleep (4);
           sprintf (cmd, "ln -s ../init.d/emu_%s /etc/rcS.d/S40emu", emu);
           printf ("+ %s\n", cmd);
           system (cmd);
           sprintf (line, "Starting:+%s", emu);
           message (line, 2);
+          system ("sh -c \"/etc/rcS.d/S40emu stop\"");
           system ("sh -c \"/etc/rcS.d/S40emu start\"");
           sleep (5);
           rezap ();

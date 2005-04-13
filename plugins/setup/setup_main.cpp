@@ -27,13 +27,14 @@
 #include "setup_extra.h"
 #include "setup_rc.h"
 #include "setup_restore.h"
+#include "enigma.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 
 #ifdef DM7020
-#define TITLE "Setup plugin (v0.04)"
+#define TITLE "Setup plugin (v0.05)"
 #else
 #define TITLE "Setup plugin (v0.19)"
 #endif
@@ -52,6 +53,8 @@ char *Executable;
 char RUN_MESSAGE[128] = "Script is running, please wait!";
 char NO_OUTPUT_MESSAGE[128] = "Success!";
 rc_config *RC = new rc_config;
+time_t time_stamp;
+time_t time_stamp_enigma;
 
 extern "C" int plugin_exec (PluginParam * par);
 
@@ -68,11 +71,17 @@ plugin_exec (PluginParam * par)
 
 eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
 {
+  int entry = 0;
+  FILE * F;
+  struct stat st;
+
   move (ePoint (180, 100));
-  int
-    entry = 0;
-  FILE *
-    F;
+
+  if (stat ("/usr/bin/enigma", &st) == 0 )
+     time_stamp_enigma = st.st_mtime;
+  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st) == 0 )
+     time_stamp = st.st_mtime;
+
 
 #ifdef SETUP_EMU
   CONNECT ((new eListBoxEntryMenu (&list, _("EMU Setup"), eString ().sprintf ("(%d) %s", ++entry, _("open EMU setup"))))->selected, eMySettings::emu_setup);
@@ -180,6 +189,7 @@ eMySettings::ipkg_setup ()
       msg.hide ();
       if (res == eMessageBox::btYes)
         {
+          system ( "echo true >/etc/init.d/modutils.sh ; chmod 755 /etc/init.d/modutils.sh" ); // HACK for error in dream package
           sprintf (exe, "sh -c \"ipkg update ; ipkg install -force-overwrite setup-plugin\"");
           Executable = exe;
           strcpy (RUN_MESSAGE, "");
@@ -187,9 +197,31 @@ eMySettings::ipkg_setup ()
           run.show ();
           run.exec ();
           run.hide ();
+          unlink ( "/etc/init.d/modutils.sh" ); // HACK for error in dream package
         }
     }
 
+   if (stat ("/usr/bin/enigma", &st) == 0 )
+     if (time_stamp_enigma != st.st_mtime)
+     {
+         eMessageBox *msg;
+         msg = new eMessageBox (_("Restarting enigma"), _("enigma is updated"), eMessageBox::btOK | eMessageBox::iconInfo);
+         msg->show ();
+         msg->exec ();
+         msg->hide ();
+         eZap::getInstance ()->quit (1);
+     }
+   if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st) == 0 )
+     if (time_stamp != st.st_mtime)
+     {
+         eMessageBox *msg;
+         msg = new eMessageBox (_("Leaving Setup plugin because it is updated"), _("Setup plugin is updated"), eMessageBox::btOK | eMessageBox::iconInfo);
+         msg->show ();
+         msg->exec ();
+         msg->hide ();
+         close(0);
+         return;
+     }
   if (stat ("/usr/lib/ipkg/info/setup-plugin.control", &st) == 0)
     {
       ipkgSetup setup;
@@ -197,6 +229,7 @@ eMySettings::ipkg_setup ()
       setup.exec ();
       setup.hide ();
     }
+
   show ();
 }
 #endif // SETUP_IPKG

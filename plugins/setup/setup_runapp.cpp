@@ -52,6 +52,7 @@ RunApp::RunApp ():
 eWindow (0)
 {
   //setText(_("Running script"));
+  printf ( "%s is running, please wait\n", Executable );
   setText (eString ().sprintf ("%s is running, please wait", Executable));
   cmove (ePoint (50, 100));
   cresize (eSize (630, 400));
@@ -91,12 +92,13 @@ RunApp::eventHandler (const eWidgetEvent & e)
       {
         app = NULL;
         output = 0;
-        app = new eConsoleAppContainer (eString ().sprintf (Executable));
+        // app = new eConsoleAppContainer (eString ().sprintf (Executable));
+        app = new eConsoleAppContainer (Executable);
         bClose->hide ();
 
         if (!app->running ())
           {
-            eMessageBox msg (_("sorry, cannot find script."), _("sorry, cannot find script."), eMessageBox::btOK | eMessageBox::iconError);
+            eMessageBox msg (_("sorry, start script."), _("sorry, start script."), eMessageBox::btOK | eMessageBox::iconError);
             msg.show ();
             msg.exec ();
             msg.hide ();

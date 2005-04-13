@@ -59,7 +59,8 @@ package:
 	mkdir -p tmp_root/usr/lib/tuxbox/plugins
 	mkdir -p tmp_root/CONTROL
 	mkdir -p tmp_root/usr/bin
-	cp $(PLUGIN).* tmp_root/usr/lib/tuxbox/plugins
+	cp $(PLUGIN).so tmp_root/usr/lib/tuxbox/plugins
+	cp $(PLUGIN).cfg tmp_root/usr/lib/tuxbox/plugins
 	cp files/control tmp_root/CONTROL
 	cp files/postinst tmp_root/CONTROL
 	cp files/mk_emulist.sh tmp_root/usr/bin
@@ -92,9 +93,9 @@ endif
 ifeq ($(BOX),DM7020)
 	ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
 	#ncftpput -u root -p dreambox dm7020 /tmp setup*.ipk
-	cp *ipk /local/web/dreambox/root/ipkg/feed
-	ipkg-make-index /local/web/dreambox/root/ipkg/feed >/local/web/dreambox/root/ipkg/feed/Packages
-	gzip -9 -f /local/web/dreambox/root/ipkg/feed/Packages
+	cp *ipk /net/web/dreambox/root/ipkg/feed
+	ipkg-make-index /net/web/dreambox/root/ipkg/feed >/net/web/dreambox/root/ipkg/feed/Packages
+	gzip -9 -f /net/web/dreambox/root/ipkg/feed/Packages
 
 	rm -f $(PLUGIN).zip
 	zip $(PLUGIN).zip $(PLUGIN).so $(PLUGIN).cfg
