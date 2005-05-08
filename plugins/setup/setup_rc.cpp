@@ -102,6 +102,9 @@ rc_config::read ()
               printf ("RC_CONFIG: %s=%s\n", left, right);
 #endif
 
+              if (strcmp (left, "CRDSRV") == 0)
+                strcpy (RC->crdsrv, right);
+
               if (strcmp (left, "SWAP_ON") == 0)
                 strcpy (RC->swap_on, right);
 
@@ -232,6 +235,11 @@ rc_config::write ()
                   fprintf (out, "SWAP_SIZE=%s\n", RC->swap_size);
                   done |= 256;
                 }
+              else if (strcmp (left, "CRDSRV") == 0)
+                {
+                  fprintf (out, "CRDSRV=%s\n", RC->crdsrv);
+                  done |= 512;
+                }
 
               else
                 fprintf (out, "%s", line2);
@@ -257,6 +265,8 @@ rc_config::write ()
         fprintf (out, "SWAP_ON=%s\n", RC->swap_on);
       if ((done & 256) == 0)
         fprintf (out, "SWAP_SIZE=%s\n", RC->swap_size);
+      if ((done & 512) == 0)
+        fprintf (out, "CRDSRV=%s\n", RC->crdsrv);
 
       if (fclose (in) == 0)
         in = NULL;

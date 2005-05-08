@@ -7,6 +7,12 @@
 
 int port = 80;
 
+int echo_system(char *cmd)
+{
+  printf ( "+ %s\n", cmd);
+  return system (cmd);
+}
+
 void
 wget (const char *url)
 {
@@ -38,13 +44,14 @@ rezap ()
 void
 restart_emu ()
 {
-  char line[512], cmd[128], emu[32];
+  char line[512], cmd[128], crdsrv[32], emu[32];
   char *ptr;
   FILE *F;
   F = fopen ("/etc/rc.config", "r");
   if (F)
     {
       emu[0] = '\0';
+      crdsrv[0] = '\0';
       while (fgets (line, 256, F) != NULL)
         {
           if ((ptr = strchr (line, '#')) != NULL)
@@ -66,23 +73,35 @@ restart_emu ()
                 {
                   strcpy (emu, ptr + 1);
                 }
+              if (strcmp (line, "CRDSRV") == 0)
+                {
+                  strcpy (crdsrv, ptr + 1);
+                }
             }
         }
       if (emu[0])
         {
+          if ( (strcmp(crdsrv, "auto") == 0) || (crdsrv[0] == '\0') )
+          {
+            strcpy (crdsrv, emu);
+            if (strcmp(crdsrv, "mgcam") == 0)
+              strcpy (crdsrv, "newcamd" );
+          }
           printf ("Stop\n");
           message ("Stopping+cam+daemons", 2);
           system ("sh -c \"ls /etc/init.d/emu_* |while read x ; do sh \\$x stop ; done\"");
-          system ("sh -c \"ls /etc/init.d/emu_* |while read x ; do sh \\$x stop ; done\"");
-          unlink ("/etc/rcS.d/S40emu");
+          system ("sh -c \"ls /etc/init.d/crdsrv* |while read x ; do sh \\$x stop ; done\"");
           unlink ("/var/tmp/camd.socket");
           sleep (4);
+          unlink ( "/etc/rcS.d/S40emu" );
           sprintf (cmd, "ln -s ../init.d/emu_%s /etc/rcS.d/S40emu", emu);
-          printf ("+ %s\n", cmd);
-          system (cmd);
+          echo_system (cmd);
+          unlink ( "/etc/rcS.d/S40crdsrv" );
+          sprintf (cmd, "ln -s ../init.d/crdsrv_%s /etc/rcS.d/S40crdsrv", crdsrv);
+          echo_system (cmd);
           sprintf (line, "Starting:+%s", emu);
           message (line, 2);
-          system ("sh -c \"/etc/rcS.d/S40emu stop\"");
+          system ("sh -c \"/etc/rcS.d/S40crdsrv start\"");
           system ("sh -c \"/etc/rcS.d/S40emu start\"");
           sleep (5);
           rezap ();

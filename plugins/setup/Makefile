@@ -92,6 +92,7 @@ ifeq ($(BOX),DM7000)
 endif
 ifeq ($(BOX),DM7020)
 	ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
+	ncftpput -u root -p dreambox dm7020 /usr/bin emud
 	#ncftpput -u root -p dreambox dm7020 /tmp setup*.ipk
 	cp *ipk /net/web/dreambox/root/ipkg/feed
 	ipkg-make-index /net/web/dreambox/root/ipkg/feed >/net/web/dreambox/root/ipkg/feed/Packages

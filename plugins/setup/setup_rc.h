@@ -40,6 +40,7 @@ public:
   char var_on[16];
   char swap_on[16];
   char swap_size[16];
+  char crdsrv[32];
   void read ();
   void write ();
 };

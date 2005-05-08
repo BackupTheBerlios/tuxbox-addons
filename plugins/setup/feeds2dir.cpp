@@ -97,13 +97,14 @@ feed2dir (char *src)
                 }
             }
         }
+      fclose (F);
     }
   else
     {
       printf ("Cannot open file\n");
     }
-  if (F)
-    fclose (F);
+  if (F2)
+    fclose (F2);
 }
 
 void

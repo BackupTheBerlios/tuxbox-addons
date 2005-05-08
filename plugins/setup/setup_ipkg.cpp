@@ -102,6 +102,8 @@ void
 ipkgSetup::ipkg_upgrade ()
 {
   struct stat st1;
+  printf ( "mount -o rw,remount /boot\n" );
+  system ( "mount -o rw,remount /boot" );
   sprintf (exe, "ipkg upgrade");
   Executable = exe;
   printf ("E: %s\n", Executable);
@@ -112,6 +114,8 @@ ipkgSetup::ipkg_upgrade ()
   run.show ();
   run.exec ();
   run.hide ();
+  printf ( "mount -o ro,remount /boot\n" );
+  system ( "mount -o ro,remount /boot" );
   show ();
   if (stat ("/usr/bin/enigma", &st1) == 0 )
     if (time_stamp_enigma != st1.st_mtime)
@@ -201,6 +205,7 @@ get_package_details (char *file, char *version, char *section)
   F = fopen (file, "r");
   if (F)
     {
+      printf ( "fileno: %d\n", fileno(F) );
       while (fgets (line, sizeof (line), F) != NULL)
         {
           if ((ptr = strchr (line, '\n')) != NULL)
@@ -224,6 +229,7 @@ get_package_details (char *file, char *version, char *section)
                 }
             }
         }
+      fclose(F);
     }
 }
 
@@ -361,14 +367,33 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
               system ("ipkg remove `cat /etc/.settings_package`");
               msg.hide ();
             }
+          //if ((strcmp (package, "daily-cvs-updates") == 0) && (stat ("/usr/lib/ipkg/info/daily-cvs-updates.control", &st) == 0))
+          if ((strcmp (package, "official-updates") == 0) && (stat ("/usr/lib/ipkg/info/daily-cvs-updates.control", &st) == 0))
+            {
+              eMessageBox msg (_("please wait removing daily-cvs-updates package.\n"), _("please wait..."), 0);
+              msg.show ();
+              system ("ipkg remove daily-cvs-updates");
+              msg.hide ();
+            }
+          if ((strcmp (package, "daily-cvs-updates") == 0) && (stat ("/usr/lib/ipkg/info/official-updates.control", &st) == 0))
+            {
+              eMessageBox msg (_("please wait removing official-updates package.\n"), _("please wait..."), 0);
+              msg.show ();
+              system ("ipkg remove official-updates");
+              msg.hide ();
+            }
           Executable = exe;
           printf ("E: %s\n", Executable);
           strcpy (RUN_MESSAGE, "");
           hide ();
+          printf ( "mount -o rw,remount /boot\n" );
+          system ( "mount -o rw,remount /boot" );
           RunApp run;
           run.show ();
           run.exec ();
           run.hide ();
+          printf ( "mount -o ro,remount /boot\n" );
+          system ( "mount -o ro,remount /boot" );
           show ();
         }
     }
