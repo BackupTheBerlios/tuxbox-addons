@@ -24,10 +24,8 @@
 
 extern "C" int plugin_exec (PluginParam * par);
 
-gFont
-  eKeyEntry::fontKey;
-gFont
-  eKeyEntry::fontDesc;
+gFont eKeyEntry::fontKey;
+gFont eKeyEntry::fontDesc;
 
 int
 plugin_exec (PluginParam * par)
@@ -64,39 +62,41 @@ plugin_exec (PluginParam * par)
       system ("killall -HUP scam"); // any change.. inform scam
       system ("killall -HUP dccamd");
     }
-/*
-	{
-		std::set<int> &modified = eKeyDatabase::getInstance()->modified;
-		int changed=0;
-		for ( std::set<int>::iterator it( modified.begin() );
-			it != modified.end(); ++it )
-		{
-			changed |= *it;
-		}
-		if ( changed &= ~(eKey::ECM_SERVER|eKey::LOCAL_ECM_SERVER) )
-// must restart camd.. sighup only working for ca_servers and ca_local_server at moment
-		{  
-			signal(SIGCHLD, SIG_IGN);
-			eDebug("restart scam... hope it is in PATH");
-			system("killall -9 scam");
-			system("killall -9 dccamd");
-			if (fork() == 0)
-			{
-				for (unsigned int i=3; i < 90; ++i )
-					close(i);
-				eDebug("restart scam");
-				execlp("scam", "scam", NULL);
-				_exit(0);
-			}
-		}
-		else  // changes in
-		{
-			eDebug("send sighup to scam.. for reread ca_server config's");
-			signal(SIGCHLD, SIG_IGN);
-			system("killall -HUP scam");
-			system("killall -HUP dccamd");
-		}
-	}*/
+#if 0                           // NEVER KILL AND RESTART SCAM
+  {
+    std::set < int >&
+      modified = eKeyDatabase::getInstance ()->modified;
+    int
+      changed = 0;
+    for (std::set < int >::iterator it (modified.begin ()); it != modified.end (); ++it)
+      {
+        changed |= *it;
+      }
+    if (changed &= ~(eKey::ECM_SERVER | eKey::LOCAL_ECM_SERVER))
+      {
+        // must restart camd.. sighup only working for ca_servers and ca_local_server at moment
+        signal (SIGCHLD, SIG_IGN);
+        eDebug ("restart scam... hope it is in PATH");
+        system ("killall -9 scam");
+        system ("killall -9 dccamd");
+        if (fork () == 0)
+          {
+            for (unsigned int i = 3; i < 90; ++i)
+              close (i);
+            eDebug ("restart scam");
+            execlp ("scam", "scam", NULL);
+            _exit (0);
+          }
+      }
+    else                        // changes in
+      {
+        eDebug ("send sighup to scam.. for reread ca_server config's");
+        signal (SIGCHLD, SIG_IGN);
+        system ("killall -HUP scam");
+        system ("killall -HUP dccamd");
+      }
+  }
+#endif
   return 0;
 }
 
@@ -625,18 +625,13 @@ eKeyDatabase::saveFile (int ca, const char *filename, const char *mask)
 eKeyDatabase *
   eKeyDatabase::instance;
 
-class
-  eKeyEdit:
-  public
-  eWindow
+class eKeyEdit:
+public eWindow
 {
   eTextInputField *
     comment;
-  std::list <
-  eEditableEntry > &
-    entries;
-  eString &
-    cmt;
+  std::list < eEditableEntry > &entries;
+  eString & cmt;
   eButton *
     save;
   void
@@ -644,8 +639,7 @@ class
   {
     for (std::list < eEditableEntry >::iterator i (entries.begin ()); i != entries.end (); ++i)
       {
-        eString
-          number = i->field->getText ();
+        eString number = i->field->getText ();
         if (i->ptr_int)
           sscanf (number.c_str (), "%x", i->ptr_int);
         else if (i->ptr_u8)
@@ -655,8 +649,7 @@ class
                 int
                   tmp;
                 sscanf (number.c_str () + a * 2, "%02x", &tmp);
-                i->
-                  ptr_u8[a] = tmp;
+                i->ptr_u8[a] = tmp;
               }
           }
       }
@@ -673,8 +666,7 @@ public:
       x = 150;
     cmove (ePoint (100, 160));
     cresize (eSize (450, 400));
-    eString
-      text = "edit ";
+    eString text = "edit ";
     switch (system)
       {
       case eKey::IRDETO:
@@ -739,15 +731,12 @@ public:
         if (!first)
           first = i->field;
 
-        eString
-          number;
-        eString
-          format;
+        eString number;
+        eString format;
         if (i->ptr_u8)
           for (int a = 0; a < i->size / 2; ++a)
             {
-              eString
-                c;
+              eString c;
               c.sprintf ("%02x", i->ptr_u8[a]);
               number += c;
             }
@@ -771,16 +760,12 @@ public:
 
 };
 
-class
-  eKeyCreator:
-  public
-  eWindow
+class eKeyCreator:
+public eWindow
 {
   int
     ca_system;
-  eListBox <
-  eListBoxEntryText > *
-    list;
+  eListBox < eListBoxEntryText > *list;
 
   void
   selected (eListBoxEntryText * l)
@@ -836,10 +821,8 @@ public:
       {
       case eKey::IRDETO:
         new eListBoxEntryText (list, "PK", (void *) "I: { 00 { 00 00 00 00 00 00 00 00 } }");
-        new
-        eListBoxEntryText (list, "PMK", (void *) "M: { 00 00 00 { 00 00 00 00 00 00 00 00 } }");
-        new
-        eListBoxEntryText (list, "HMK", (void *) "H: { 00 00 00 { 00 00 00 00 00 00 00 00 00 00 } }");
+        new eListBoxEntryText (list, "PMK", (void *) "M: { 00 00 00 { 00 00 00 00 00 00 00 00 } }");
+        new eListBoxEntryText (list, "HMK", (void *) "H: { 00 00 00 { 00 00 00 00 00 00 00 00 00 00 } }");
         break;
       case eKey::NAGRAVISION:
         new eListBoxEntryText (list, "OpKey", (void *) "N: { 00 00 00 { 00 00 00 00 00 00 00 00 } }");
@@ -849,23 +832,18 @@ public:
         break;
       case eKey::SECA:
         new eListBoxEntryText (list, "OpKey", (void *) "S: { 00 00 00 { 00 00 00 00 00 00 00 00 }}");
-        new
-        eListBoxEntryText (list, "MasterKey", (void *) "M: { 00 00 00 00 00 00 00 { 00 00 00 00 00 00 00 00 }}");
+        new eListBoxEntryText (list, "MasterKey", (void *) "M: { 00 00 00 00 00 00 00 { 00 00 00 00 00 00 00 00 }}");
         break;
       case eKey::VIACCESS:
         new eListBoxEntryText (list, "OpKey", (void *) "V: { 00 00 00 00 { 00 00 00 00 00 00 00 00 }}");
-        new
-        eListBoxEntryText (list, "MasterKey", (void *) "M: { 00 00 00 00 00 00 00 00 00 { 00 00 00 00 00 00 00 00 }}");
+        new eListBoxEntryText (list, "MasterKey", (void *) "M: { 00 00 00 00 00 00 00 00 00 { 00 00 00 00 00 00 00 00 }}");
         break;
       }
   }
 };
 
-class
-  eSystemChooser:
-  public
-  eListBoxWindow <
-  eListBoxEntryText >
+class eSystemChooser:
+public eListBoxWindow < eListBoxEntryText >
 {
   void
   choosedSystem (eListBoxEntryText * system)
@@ -877,8 +855,7 @@ class
     else if ((int) system->getKey () == eKey::LOCAL_ECM_SERVER)
       {
         hide ();
-        eLocaleServerEditWindow
-          s;
+        eLocaleServerEditWindow s;
         s.show ();
         s.exec ();
         s.hide ();
@@ -887,8 +864,7 @@ class
     else if ((int) system->getKey () == eKey::CW_SERVER)
       {
         hide ();
-        eCWServerEditWindow
-          s;
+        eCWServerEditWindow s;
         s.show ();
         s.exec ();
         s.hide ();
@@ -897,8 +873,7 @@ class
     else
       {
         hide ();
-        eKeyEditor
-        kedit ((int) system->getKey ());
+        eKeyEditor kedit ((int) system->getKey ());
         kedit.show ();
         kedit.exec ();
         kedit.hide ();
@@ -909,25 +884,15 @@ public:
 eSystemChooser ():eListBoxWindow < eListBoxEntryText > ("Scam Edit", 9, 400, true)
   {
     cmove (ePoint (180, 150));
-    new
-    eListBoxEntryText (&list, "Irdeto / Betacrypt Keys", (void *) eKey::IRDETO, 0, "press ok to open irdeto/betacrypt key editor");
-//      new eListBoxEntryText(system, "Conax", (void*)eKey::CONAX);
-    new
-    eListBoxEntryText (&list, "Seca Keys", (void *) eKey::SECA, 0, "press ok to open seca key editor");
-    new
-    eListBoxEntryText (&list, "Nagra Keys", (void *) eKey::NAGRAVISION, 0, "press ok to open nagra key editor");
-    new
-    eListBoxEntryText (&list, "Nagra Boxkey", (void *) eKey::NAGRAVISION_BOXKEY, 0, "press ok to open nagra boxkey editor");
-    new
-    eListBoxEntryText (&list, "Viaccess Keys", (void *) eKey::VIACCESS, 0, "press ok to open viaccess key editor");
-    new
-    eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
-    new
-    eListBoxEntryText (&list, "Remote ECM Server Settings", (void *) eKey::ECM_SERVER, 0, "press ok to open remote ecm server list (cardsharing)");
-    new
-    eListBoxEntryText (&list, "Local ECM Server Settings", (void *) eKey::LOCAL_ECM_SERVER, 0, "press ok to open local ecm server setting");
-    new
-    eListBoxEntryText (&list, "CW Server Settings", (void *) eKey::CW_SERVER, 0, "press ok to open cw server setting");
+    new eListBoxEntryText (&list, "Remote ECM Server Settings", (void *) eKey::ECM_SERVER, 0, "press ok to open remote ecm server list (cardsharing)");
+    new eListBoxEntryText (&list, "Local ECM Server Settings", (void *) eKey::LOCAL_ECM_SERVER, 0, "press ok to open local ecm server setting");
+    new eListBoxEntryText (&list, "CW Server Settings", (void *) eKey::CW_SERVER, 0, "press ok to open cw server setting");
+    new eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
+    new eListBoxEntryText (&list, "Irdeto / Betacrypt Keys", (void *) eKey::IRDETO, 0, "press ok to open irdeto/betacrypt key editor");
+    new eListBoxEntryText (&list, "Seca Keys", (void *) eKey::SECA, 0, "press ok to open seca key editor");
+    new eListBoxEntryText (&list, "Nagra Keys", (void *) eKey::NAGRAVISION, 0, "press ok to open nagra key editor");
+    new eListBoxEntryText (&list, "Nagra Boxkey", (void *) eKey::NAGRAVISION_BOXKEY, 0, "press ok to open nagra boxkey editor");
+    new eListBoxEntryText (&list, "Viaccess Keys", (void *) eKey::VIACCESS, 0, "press ok to open viaccess key editor");
     CONNECT (list.selected, eSystemChooser::choosedSystem);
   }
 };
@@ -1214,8 +1179,7 @@ eECMServerEditWindow::eECMServerEditWindow (eECMServerEntry * entry):curEntry (e
   caids->setHelpText ("red - remove selected entry, left - go to caid input field, right - go to 'use server' field");
   for (std::list < eString >::iterator it (entry->caids.begin ()); it != entry->caids.end (); ++it)
     {
-      new
-      eListBoxEntryText (caids, *it);
+      new eListBoxEntryText (caids, *it);
     }
   caids->sort ();
 
@@ -1282,7 +1246,7 @@ eListBoxEntryText &, void >
   }
 
   bool
-  operator () (eListBoxEntryText & s)
+  operator  () (eListBoxEntryText & s)
   {
     list.push_back (s.getText ());
     return 0;
