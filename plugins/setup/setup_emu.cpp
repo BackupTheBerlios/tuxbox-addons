@@ -19,6 +19,8 @@
 
 #ifdef SETUP_EMU
 
+#include <dlfcn.h>
+
 #include "setup.h"
 #include "setup_emu.h"
 #include "setup_runapp.h"
@@ -278,29 +280,33 @@ void
 eZapEmuSetup::EmuSetup (eListBoxEntryText * item)
 {
   int ok = 0;
+  void *handle;
+  char filename[256];
+  char *error;
+
   if (!item)
     return;
   eString str = item->getText ();
-#ifdef SETUP_CS
-  if (strstr (str.c_str (), "_cs"))
+
+  if (strcmp (str.c_str (), "newcamd") == 0)
     {
       ok = 1;
-      SetupScam_cs setup;
-      setup.show ();
-      setup.exec ();
-      setup.hide ();
+      strcpy (filename, "/usr/lib/tuxbox/plugins/newcamd_conf_edit.so");
+      handle = dlopen (filename, RTLD_GLOBAL | RTLD_NOW);
+      if (!handle)
+        {
+          fprintf (stderr, "%s\n", dlerror ());
+          ok = 0;
+        }
+      dlerror ();               /* Clear any existing error */
+      dlsym (handle, "plugin_exec");
+      if ((error = dlerror ()) != NULL)
+        {
+          fprintf (stderr, "%s\n", error);
+          ok = 0;
+        }
     }
-#endif
-#ifdef SETUP_GBOX
-  if (strncmp (str.c_str (), "gbox", 4) == 0)
-    {
-      ok = 1;
-      SetupGbox setup;
-      setup.show ();
-      setup.exec ();
-      setup.hide ();
-    }
-#endif
+
   if (!ok)
     {
       // eMessageBox msg (_(str.c_str ()), _(str.c_str ()), eMessageBox::btOK | eMessageBox::iconError);

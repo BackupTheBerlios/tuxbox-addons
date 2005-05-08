@@ -60,10 +60,10 @@ eSetupWindow (_("Package Manager"), 10, 350)
   struct stat st;
 
   /*if (stat ("/usr/bin/enigma", &st) == 0 )
-    time_stamp_enigma = st.st_mtime;
-  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st) == 0 )
-    time_stamp = st.st_mtime;
-  */
+     time_stamp_enigma = st.st_mtime;
+     if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st) == 0 )
+     time_stamp = st.st_mtime;
+   */
 
   CONNECT ((new
             eListBoxEntryMenu (&list, _("Update package database"),
@@ -102,8 +102,8 @@ void
 ipkgSetup::ipkg_upgrade ()
 {
   struct stat st1;
-  printf ( "mount -o rw,remount /boot\n" );
-  system ( "mount -o rw,remount /boot" );
+  printf ("mount -o rw,remount /boot\n");
+  system ("mount -o rw,remount /boot");
   sprintf (exe, "ipkg upgrade");
   Executable = exe;
   printf ("E: %s\n", Executable);
@@ -114,15 +114,15 @@ ipkgSetup::ipkg_upgrade ()
   run.show ();
   run.exec ();
   run.hide ();
-  printf ( "mount -o ro,remount /boot\n" );
-  system ( "mount -o ro,remount /boot" );
+  printf ("mount -o ro,remount /boot\n");
+  system ("mount -o ro,remount /boot");
   show ();
-  if (stat ("/usr/bin/enigma", &st1) == 0 )
+  if (stat ("/usr/bin/enigma", &st1) == 0)
     if (time_stamp_enigma != st1.st_mtime)
-      close(0);
-  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0 )
+      close (0);
+  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0)
     if (time_stamp != st1.st_mtime)
-      close(0);
+      close (0);
 }
 
 void
@@ -150,12 +150,12 @@ ipkgSetup::ipkg_inst_rem ()
       win.exec ();
       win.hide ();
     }
-  if (stat ("/usr/bin/enigma", &st1) == 0 )
+  if (stat ("/usr/bin/enigma", &st1) == 0)
     if (time_stamp_enigma != st1.st_mtime)
-      close(0);
-  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0 )
+      close (0);
+  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0)
     if (time_stamp != st1.st_mtime)
-      close(0);
+      close (0);
   show ();
 }
 
@@ -173,7 +173,7 @@ ipkgSetup::ipkg2ronaldd ()
   msg.hide ();
   if (res == eMessageBox::btYes)
     {
-      sprintf ( exe, "sh -c /usr/bin/mk_ronaldd_image.sh" );
+      sprintf (exe, "sh -c /usr/bin/mk_ronaldd_image.sh");
       Executable = exe;
       printf ("E: %s\n", Executable);
       strcpy (RUN_MESSAGE, "");
@@ -184,12 +184,12 @@ ipkgSetup::ipkg2ronaldd ()
       run.hide ();
       show ();
     }
-  if (stat ("/usr/bin/enigma", &st1) == 0 )
+  if (stat ("/usr/bin/enigma", &st1) == 0)
     if (time_stamp_enigma != st1.st_mtime)
-      close(0);
-  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0 )
+      close (0);
+  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0)
     if (time_stamp != st1.st_mtime)
-      close(0);
+      close (0);
 }
 
 
@@ -205,7 +205,7 @@ get_package_details (char *file, char *version, char *section)
   F = fopen (file, "r");
   if (F)
     {
-      printf ( "fileno: %d\n", fileno(F) );
+      printf ("fileno: %d\n", fileno (F));
       while (fgets (line, sizeof (line), F) != NULL)
         {
           if ((ptr = strchr (line, '\n')) != NULL)
@@ -229,7 +229,7 @@ get_package_details (char *file, char *version, char *section)
                 }
             }
         }
-      fclose(F);
+      fclose (F);
     }
 }
 
@@ -386,14 +386,14 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
           printf ("E: %s\n", Executable);
           strcpy (RUN_MESSAGE, "");
           hide ();
-          printf ( "mount -o rw,remount /boot\n" );
-          system ( "mount -o rw,remount /boot" );
+          printf ("mount -o rw,remount /boot\n");
+          system ("mount -o rw,remount /boot");
           RunApp run;
           run.show ();
           run.exec ();
           run.hide ();
-          printf ( "mount -o ro,remount /boot\n" );
-          system ( "mount -o ro,remount /boot" );
+          printf ("mount -o ro,remount /boot\n");
+          system ("mount -o ro,remount /boot");
           show ();
         }
     }

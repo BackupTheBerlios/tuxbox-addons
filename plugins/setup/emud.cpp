@@ -7,9 +7,10 @@
 
 int port = 80;
 
-int echo_system(char *cmd)
+int
+echo_system (char *cmd)
 {
-  printf ( "+ %s\n", cmd);
+  printf ("+ %s\n", cmd);
   return system (cmd);
 }
 
@@ -81,22 +82,22 @@ restart_emu ()
         }
       if (emu[0])
         {
-          if ( (strcmp(crdsrv, "auto") == 0) || (crdsrv[0] == '\0') )
-          {
-            strcpy (crdsrv, emu);
-            if (strcmp(crdsrv, "mgcam") == 0)
-              strcpy (crdsrv, "newcamd" );
-          }
+          if ((strcmp (crdsrv, "auto") == 0) || (crdsrv[0] == '\0'))
+            {
+              strcpy (crdsrv, emu);
+              if (strcmp (crdsrv, "mgcam") == 0)
+                strcpy (crdsrv, "newcamd");
+            }
           printf ("Stop\n");
           message ("Stopping+cam+daemons", 2);
           system ("sh -c \"ls /etc/init.d/emu_* |while read x ; do sh \\$x stop ; done\"");
           system ("sh -c \"ls /etc/init.d/crdsrv* |while read x ; do sh \\$x stop ; done\"");
           unlink ("/var/tmp/camd.socket");
           sleep (4);
-          unlink ( "/etc/rcS.d/S40emu" );
+          unlink ("/etc/rcS.d/S40emu");
           sprintf (cmd, "ln -s ../init.d/emu_%s /etc/rcS.d/S40emu", emu);
           echo_system (cmd);
-          unlink ( "/etc/rcS.d/S40crdsrv" );
+          unlink ("/etc/rcS.d/S40crdsrv");
           sprintf (cmd, "ln -s ../init.d/crdsrv_%s /etc/rcS.d/S40crdsrv", crdsrv);
           echo_system (cmd);
           sprintf (line, "Starting:+%s", emu);
