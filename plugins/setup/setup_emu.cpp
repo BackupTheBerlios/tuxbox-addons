@@ -276,6 +276,16 @@ eZapEmuSetup::keyupdatePressed ()
   show ();
 }
 
+char *
+find_file (const char *file)
+{
+  char filename[256];
+  strcpy ( filename, file);
+
+  printf ("FINDFILE: file=(%s) filename=(%s)\n", file, filename);
+  return filename;
+}
+
 void
 eZapEmuSetup::EmuSetup (eListBoxEntryText * item)
 {
@@ -283,15 +293,24 @@ eZapEmuSetup::EmuSetup (eListBoxEntryText * item)
   void *handle;
   char filename[256];
   char *error;
+  int (*do_plugin_exec) (PluginParam * par);
 
   if (!item)
     return;
   eString str = item->getText ();
 
+  if (strcmp (str.c_str (), "radegast") == 0)
+    {
+      ok = 1;
+      strcpy (filename, "/usr/lib/tuxbox/plugins/radegast_conf_edit.so");
+    }
   if (strcmp (str.c_str (), "newcamd") == 0)
     {
       ok = 1;
       strcpy (filename, "/usr/lib/tuxbox/plugins/newcamd_conf_edit.so");
+    }
+  if (ok == 1)
+    {
       handle = dlopen (filename, RTLD_GLOBAL | RTLD_NOW);
       if (!handle)
         {
@@ -299,11 +318,16 @@ eZapEmuSetup::EmuSetup (eListBoxEntryText * item)
           ok = 0;
         }
       dlerror ();               /* Clear any existing error */
-      dlsym (handle, "plugin_exec");
+      *(void **) (&do_plugin_exec) = dlsym (handle, "plugin_exec");
       if ((error = dlerror ()) != NULL)
         {
           fprintf (stderr, "%s\n", error);
           ok = 0;
+        }
+      if (ok == 1)
+        {
+          (*do_plugin_exec) (NULL);
+          dlclose (handle);
         }
     }
 

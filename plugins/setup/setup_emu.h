@@ -42,6 +42,7 @@ extern char *SCRIPTS[MAX_SCRIPTS];
 extern char *Executable;
 extern char RUN_MESSAGE[128];
 extern rc_config *RC;
+// extern char *find_file (char *file);
 
 class ServicesSetup:public eWindow
 {

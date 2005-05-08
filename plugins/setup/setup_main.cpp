@@ -34,7 +34,7 @@
 
 
 #ifdef DM7020
-#define TITLE "Setup plugin (v0.08)"
+#define TITLE "Setup plugin (v0.09)"
 #else
 #define TITLE "Setup plugin (v0.19)"
 #endif
@@ -145,7 +145,7 @@ eMySettings::run_plugins ()
 {
   printf ("eMySettings::emu_setup()\n");
   hide ();
-  eZapPlugins plugins (5);
+  eZapPlugins plugins (2);
   plugins.exec ();
 /*
   plugins.execPluginByName("newcamd_conf_edit.cfg");
