@@ -133,8 +133,7 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
     }
 #endif
 
-  new
-  eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
+  new eListBoxEntrySeparator ((eListBox < eListBoxEntry > *) & list, eSkin::getActive ()->queryImage ("listbox.separator"), 0, true);
 
   CONNECT ((new eListBoxEntryMenu (&list, _("Plugins"), eString ().sprintf ("(%d) %s", ++entry, _("Run the normale plugins"))))->selected,
            eMySettings::run_plugins);

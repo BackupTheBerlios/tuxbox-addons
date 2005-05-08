@@ -280,7 +280,7 @@ char *
 find_file (const char *file)
 {
   char filename[256];
-  strcpy ( filename, file);
+  strcpy (filename, file);
 
   printf ("FINDFILE: file=(%s) filename=(%s)\n", file, filename);
   return filename;
