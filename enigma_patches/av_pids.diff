@@ -1,10 +1,10 @@
 Index: lib/dvb/decoder.cpp
 ===================================================================
 RCS file: /cvs/tuxbox/apps/tuxbox/enigma/lib/dvb/decoder.cpp,v
-retrieving revision 1.50
-diff -u -r1.50 decoder.cpp
---- a/lib/dvb/decoder.cpp	1 Jul 2004 13:50:31 -0000	1.50
-+++ b/lib/dvb/decoder.cpp	16 Jul 2004 21:06:16 -0000
+retrieving revision 1.57
+diff -u -r1.57 decoder.cpp
+--- a/lib/dvb/decoder.cpp       3 Dec 2004 22:22:13 -0000       1.57
++++ b/lib/dvb/decoder.cpp       25 Feb 2005 11:57:32 -0000
 @@ -1,3 +1,8 @@
 +typedef struct ca_pid {
 +        unsigned int pid;
@@ -17,34 +17,36 @@ diff -u -r1.50 decoder.cpp
 @@ -63,6 +68,14 @@
  int Decoder::fd::mpeg;
  int Decoder::locked=0;
- 
+
 +int rdn_addPid(int fd_ca, int index, int pid) {
-+	rdn_ca_pid_t ca_pid;
-+	ca_pid.index = index;
-+	ca_pid.pid = pid;
-+	printf ( "Adding pid to descrambler: %x\n", pid);
-+	return ioctl(fd_ca, RDN_CA_SET_PID, &ca_pid);
++       rdn_ca_pid_t ca_pid;
++       ca_pid.index = index;
++       ca_pid.pid = pid;
++       printf ( "Adding pid to descrambler: %x\n", pid);
++       return ioctl(fd_ca, RDN_CA_SET_PID, &ca_pid);
 +}
 +
  static void SetECM(int vpid, int apid, int pmtpid, int descriptor_length, __u8 *descriptors)
  {
  #if 0
-@@ -245,6 +258,18 @@
- 
- 	if (changed & 0xC7 || parms.restart_camd)
- 	{
-+		for (int i=0; i<=2; i++)
-+		{
-+			char qqq[24];
-+			sprintf (qqq, "/dev/dvb/card0/ca%d", i);
-+                	int rdn_fd = open ( qqq, O_RDWR );
-+			if (rdn_fd>0)
-+			{
-+				rdn_addPid(rdn_fd, 0, parms.vpid);
-+				rdn_addPid(rdn_fd, 0, parms.apid);
-+				close(rdn_fd);
-+			}
-+		}
- 		SetECM(parms.vpid, parms.apid, parms.pmtpid, parms.descriptor_length, parms.descriptors);
- 		parms.restart_camd=0;
- 	}
+@@ -270,6 +283,20 @@
+
+        if (changed & 0xC7 || parms.restart_camd)
+        {
++               for (int i=0; i<=2; i++)
++               {
++                       char qqq[24];
++                       sprintf (qqq, "/dev/dvb/card0/ca%d", i);
++                       int rdn_fd = open ( qqq, O_RDWR );
++                       if (rdn_fd>0)
++                       {
++                               if (parms.vpid > 0 && parms.vpid < 0xffff)
++                                       rdn_addPid(rdn_fd, 0, parms.vpid);
++                               if (parms.apid > 0 && parms.apid < 0xffff)
++                                       rdn_addPid(rdn_fd, 0, parms.apid);
++                               close(rdn_fd);
++                       }
++               }
+                SetECM(parms.vpid, parms.apid, parms.pmtpid, parms.descriptor_length, parms.descriptors);
+                parms.restart_camd=0;
+        }
