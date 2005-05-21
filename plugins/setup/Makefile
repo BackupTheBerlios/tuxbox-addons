@@ -16,8 +16,8 @@ endif
 ifeq ($(b), DM7000)
 BOX = DM7000
 # $(DBG) -DSETUP_GBOX
-DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_CS -DSETUP_GBOX -DSETUP_RESTORE \
-		-DDM7000 -DMOUNT_UNMOUNT #-DSETUP_RDG
+DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_RESTORE \
+		-DDM7000 -DMOUNT_UNMOUNT
 OBJECTS  = setup_runapp.o setup_extra.o setup_rc.o setup_services.o setup_emu.o setup_usb.o setup_main.o \
 	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o
 PLUGIN    = setup7
@@ -89,9 +89,10 @@ install: all
 ifeq ($(BOX),DM7000)
 	cp setup7.so setup7.cfg /net/tuxbox/tftpboot/image/lib/tuxbox/plugins/
 	cp setup7.so setup7.cfg /net/tuxbox/emu_root$(KERNEL)/lib/tuxbox/plugins/
+	ncftpput -u root -p dreambox dreambox /var/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
 endif
 ifeq ($(BOX),DM7020)
-	#ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
+	ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
 	#ncftpput -u root -p dreambox dm7020 /usr/bin emud
 	#ncftpput -u root -p dreambox dm7020 /tmp setup*.ipk
 	cp *ipk /net/web/dreambox/root/ipkg/feed
