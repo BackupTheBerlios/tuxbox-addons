@@ -36,7 +36,7 @@
 #ifdef DM7020
 #define TITLE "Setup plugin (v0.09)"
 #else
-#define TITLE "Setup plugin (v0.19)"
+#define TITLE "Setup plugin (v0.20)"
 #endif
 
 #include <lib/gui/emessage.h>
