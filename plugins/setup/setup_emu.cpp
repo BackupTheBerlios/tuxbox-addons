@@ -279,10 +279,22 @@ eZapEmuSetup::keyupdatePressed ()
 char *
 find_file (const char *file)
 {
-  char filename[256];
-  strcpy (filename, file);
+  struct stat st;
+  static char filename[256];
 
-  printf ("FINDFILE: file=(%s) filename=(%s)\n", file, filename);
+  printf ("FINDFILE: file=(%s)\n", file);
+
+  sprintf ( filename, "/usr/lib/tuxbox/plugins/%s", file);
+  if (stat (filename, &st) == 0)
+    return filename;
+  sprintf ( filename, "/var/tuxbox/plugins/%s", file);
+  if (stat (filename, &st) == 0)
+    return filename;
+  sprintf ( filename, "/lib/tuxbox/plugins/%s", file);
+  if (stat (filename, &st) == 0)
+    return filename;
+
+  strcpy (filename, file);
   return filename;
 }
 
@@ -291,24 +303,21 @@ eZapEmuSetup::EmuSetup (eListBoxEntryText * item)
 {
   int ok = 0;
   void *handle;
-  char filename[256];
-  char *error;
+  char filename[256], tmp[128];
+  char *error, *ptr;
   int (*do_plugin_exec) (PluginParam * par);
 
   if (!item)
     return;
   eString str = item->getText ();
 
-  if (strcmp (str.c_str (), "radegast") == 0)
-    {
-      ok = 1;
-      strcpy (filename, "/usr/lib/tuxbox/plugins/radegast_conf_edit.so");
-    }
-  if (strcmp (str.c_str (), "newcamd") == 0)
-    {
-      ok = 1;
-      strcpy (filename, "/usr/lib/tuxbox/plugins/newcamd_conf_edit.so");
-    }
+  sprintf (tmp, "%s_conf_edit.so", str.c_str ());
+  ptr = strstr (tmp, "_cs_conf_edit.so");
+  if (ptr)
+    strcpy (tmp, "cs_conf_edit.so" );
+  strcpy (filename, find_file(tmp) );
+
+  ok = 1;
   if (ok == 1)
     {
       handle = dlopen (filename, RTLD_GLOBAL | RTLD_NOW);
