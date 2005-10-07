@@ -98,11 +98,16 @@ restart_emu ()
           sprintf (cmd, "ln -s ../init.d/emu_%s /etc/rcS.d/S40emu", emu);
           echo_system (cmd);
           unlink ("/etc/rcS.d/S40crdsrv");
-          sprintf (cmd, "ln -s ../init.d/crdsrv_%s /etc/rcS.d/S40crdsrv", crdsrv);
-          echo_system (cmd);
+          if ( strcmp (crdsrv, "none") != 0 )
+          {
+            sprintf (cmd, "ln -s ../init.d/crdsrv_%s /etc/rcS.d/S40crdsrv", crdsrv);
+            echo_system (cmd);
+            sprintf (line, "Starting+server:+%s", crdsrv);
+            message (line, 2);
+            system ("sh -c \"/etc/rcS.d/S40crdsrv start\"");
+          }
           sprintf (line, "Starting:+%s", emu);
           message (line, 2);
-          system ("sh -c \"/etc/rcS.d/S40crdsrv start\"");
           system ("sh -c \"/etc/rcS.d/S40emu start\"");
           sleep (5);
           rezap ();

@@ -1,10 +1,11 @@
-CDK_SRC  ?= $(HOME)/tuxbox/dreambox
-CDKROOT  ?= /net/tuxbox/dreambox/cdkroot
-CROSS     = powerpc-tuxbox-linux-gnu-
-CXX       = $(CROSS)g++
-STRIP     = $(CROSS)strip
-DBG       = -DDEBUG
-b        ?= DM7020
+CDK_SRC   ?= $(HOME)/tuxbox/dreambox
+CDKROOT   ?= /net/tuxbox/dreambox/cdkroot
+DB_TARGET ?= powerpc-tuxbox-linux-gnu
+CROSS      = $(DB_TARGET)-
+CXX        = ccache $(CROSS)g++
+STRIP      = $(CROSS)strip
+DBG        = -DDEBUG
+b         ?= DM7020
 
 ifeq ($(b), DM5600)
 BOX = DM5600
@@ -19,7 +20,7 @@ BOX = DM7000
 DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_RESTORE \
 		-DDM7000 -DMOUNT_UNMOUNT
 OBJECTS  = setup_runapp.o setup_extra.o setup_rc.o setup_services.o setup_emu.o setup_usb.o setup_main.o \
-	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o
+	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o plugin.o
 PLUGIN    = setup7
 endif
 
@@ -27,15 +28,22 @@ ifeq ($(b), DM7020)
 BOX = DM7020
 DEFINES  = $(DBG) -DDM7020 -DSETUP_EMU -DSETUP_USB -DSETUP_CS -DSETUP_GBOX -DMOUNT_UNMOUNT -DSETUP_IPKG #-DSETUP_RDG
 OBJECTS  = setup_runapp.o setup_extra.o setup_rc.o setup_services.o setup_emu.o setup_usb.o setup_main.o \
-	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o setup_ipkg.o feeds2dir.o
+	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o setup_ipkg.o feeds2dir.o plugin.o
 PLUGIN    = setup7020
 PACKAGE = package feeds2dir
 F2D_O = feeds2dir.o feeds2dir_main.o
 endif
 
+ifeq ($(DB_TARGET), powerpc-linux)
+INCLUDES = -I$(OE_BUILDDIR)/tmp/staging/powerpc-linux/include -I$(OE_BUILDDIR)/tmp/staging/powerpc-linux/include/enigma \
+	   -I$(OE_BUILDDIR)/tmp/staging/powerpc-linux/include/sigc++-1.2 -I$(OE_BUILDDIR)/tmp/staging/powerpc-linux/lib/sigc++-1.2/include \
+	   -I$(OE_BUILDDIR)/tmp/staging/powerpc-linux/include/tuxbox/xmltree -I$(OE_BUILDDIR)/tmp/staging/powerpc-linux/include/tuxbox \
+	   -I.
+else
 INCLUDES = -I$(CDK_SRC)/apps/tuxbox/enigma/include -I$(CDKROOT)/include -I$(CDKROOT)/include/sigc++-1.2 \
 	   -I$(CDKROOT)/lib/sigc++-1.2/include -I$(CDK_SRC)/apps/tuxbox/enigma -I$(CDK_SRC)/apps/misc/libs/libxmltree \
 	   -I$(CDK_SRC)/apps/tuxbox/plugins/include -I$(CDK_SRC)/apps/tuxbox/enigma/src -I.
+endif
 
 CFLAGS   = $(DEFINES) $(INCLUDES) -fno-rtti -fno-exceptions -Wall -O2 -mcpu=405 -mmultiple -mstring -g -ggdb3 -pipe
 #CFLAGS   = $(DEFINES) $(INCLUDES) -Wall -O2 -mcpu=405
@@ -59,12 +67,14 @@ package:
 	mkdir -p tmp_root/usr/lib/tuxbox/plugins
 	mkdir -p tmp_root/CONTROL
 	mkdir -p tmp_root/usr/bin
+	mkdir -p tmp_root/etc/init.d
 	cp $(PLUGIN).so tmp_root/usr/lib/tuxbox/plugins
 	cp $(PLUGIN).cfg tmp_root/usr/lib/tuxbox/plugins
 	cp files/control tmp_root/CONTROL
 	cp files/postinst tmp_root/CONTROL
 	cp files/mk_emulist.sh tmp_root/usr/bin
 	cp files/mk_ronaldd_image.sh tmp_root/usr/bin
+	ln -s dccamd tmp_root/etc/init.d/emu_dccamd
 	ipkg-build -o 0 -g 0 tmp_root
 	rm -rf tmp_root
 	mkdir -p tmp_root/CONTROL

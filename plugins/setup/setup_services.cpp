@@ -95,6 +95,7 @@ eWindow (0)
   eStartSamba->setHelpText (_("start/do not start the samba daemons"));
   CONNECT (eStartSamba->checked, ServicesSetup::EmuStartSambaChanged);
 
+#ifdef NOT_ANY_MORE
   v_CardInfo = CardInfo ();
   if (v_CardInfo == 0)
     {
@@ -108,6 +109,7 @@ eWindow (0)
       cardinfo->loadDeco ();
       CONNECT (cardinfo->selected, ServicesSetup::cardinfoPressed);
     }
+#endif
 
 #if 0
   v_IpInfo = IpInfo ();
@@ -195,6 +197,7 @@ ServicesSetup::abortPressed ()
   close (0);
 }
 
+#ifdef NOT_ANY_MORE
 void
 ServicesSetup::cardinfoPressed ()
 {
@@ -207,6 +210,7 @@ ServicesSetup::cardinfoPressed ()
   run.hide ();
   show ();
 }
+#endif
 
 void
 ServicesSetup::ipinfoPressed ()
@@ -221,6 +225,7 @@ ServicesSetup::ipinfoPressed ()
   show ();
 }
 
+#ifdef NOT_ANY_MORE
 int
 ServicesSetup::CardInfo ()
 {
@@ -236,6 +241,8 @@ ServicesSetup::CardInfo ()
       return -1;
     }
 }
+#endif
+
 int
 ServicesSetup::IpInfo ()
 {

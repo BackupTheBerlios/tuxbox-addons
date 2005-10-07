@@ -100,11 +100,32 @@ eWindow (0)
   for (i = 0; i < RC->no_emu; i++)
     {
       // printf ("R:(%s) i=%i\n", EMU[i], i);
-      entrys[i] = new eListBoxEntryText (SelectedEmu, _(EMU[i]), (void *) i);
+      entrys[i] = new eListBoxEntryText (SelectedEmu, EMU[i], (void *) i);
     }
   SelectedEmu->setCurrent (entrys[RC->v_SelectedEmu]);
   SelectedEmu->setHelpText (_("choose emu ( left, right )"));
   CONNECT (SelectedEmu->selected, eZapEmuSetup::EmuSetup);
+
+  eLabel *l2 = new eLabel (this);
+  l2->setText (_("Select Server:"));
+  l2->move (ePoint (10, 50));
+  l2->resize (eSize (200, fd + 4));
+
+  eListBoxEntryText *entrys2[10];
+  SelectedCrdsrv = new eListBox < eListBoxEntryText > (this, l);
+  SelectedCrdsrv->loadDeco ();
+  SelectedCrdsrv->setFlags (eListBox < eListBoxEntryText >::flagNoUpDownMovement);
+  SelectedCrdsrv->move (ePoint (160, 50));
+  SelectedCrdsrv->resize (eSize (200, 35));
+  for (i = 0; i < RC->no_crdsrv; i++)
+    {
+      // printf ("R:(%s) i=%i\n", CRDSRV[i], i);
+      entrys2[i] = new eListBoxEntryText (SelectedCrdsrv, CRDSRV[i], (void *) i);
+    }
+  SelectedCrdsrv->setCurrent (entrys2[RC->v_SelectedCrdsrv]);
+  SelectedCrdsrv->setHelpText (_("choose card server ( left, right )"));
+  CONNECT (SelectedCrdsrv->selected, eZapEmuSetup::EmuSetup);
+
 
 #ifdef NOT_ANY_MORE
   eEmuEnabled = new eCheckbox (this, Enabled, 1);
@@ -115,17 +136,17 @@ eWindow (0)
   CONNECT (eEmuEnabled->checked, eZapEmuSetup::EmuEnabledChanged);
 #endif
 
-#ifdef NOT_ANY_MORE
   keyupdate = new eButton (this);
   keyupdate->setShortcut ("blue");
   keyupdate->setShortcutPixmap ("blue");
-  keyupdate->setText (_("Key update"));
-  keyupdate->move (ePoint (20, 50));
+  keyupdate->setText (_("Key setting"));
+  keyupdate->move (ePoint (20, 90));
   keyupdate->resize (eSize (170, 40));
-  keyupdate->setHelpText (_("Try to get the keys from internet"));
+  keyupdate->setHelpText (_("Launch the key update and convert plugin"));
   keyupdate->loadDeco ();
   CONNECT (keyupdate->selected, eZapEmuSetup::keyupdatePressed);
 
+#ifdef NOT_ANY_MORE
   softcam2all = new eButton (this);
   softcam2all->setText (_("Soft -> all"));
   softcam2all->setShortcut ("yellow");
@@ -137,7 +158,6 @@ eWindow (0)
   CONNECT (softcam2all->selected, eZapEmuSetup::softcam2allPressed);
 #endif
 
-#ifdef NOT_ANY_MORE
   v_CardInfo = CardInfo ();
   if (v_CardInfo == 0)
     {
@@ -145,13 +165,14 @@ eWindow (0)
       cardinfo->setShortcut ("yellow");
       cardinfo->setShortcutPixmap ("yellow");
       cardinfo->setText (_("Card info"));
-      cardinfo->move (ePoint (210, 170));
+      cardinfo->move (ePoint (210, 90));
       cardinfo->resize (eSize (170, 40));
       cardinfo->setHelpText (_("Show some info of seca card"));
       cardinfo->loadDeco ();
       CONNECT (cardinfo->selected, eZapEmuSetup::cardinfoPressed);
     }
 
+#ifdef NOT_ANY_MORE
   extraset = new eButton (this);
   extraset->setShortcut ("1");
   extraset->setShortcutPixmap ("1");
@@ -203,6 +224,34 @@ eWindow (0)
   statusbar->loadDeco ();
 }
 
+int eZapEmuSetup::CardInfo ()
+{
+  FILE *file;
+  file = fopen ("/var/tmp/cardinfo", "r");
+  if (file)
+    {
+      return 0;
+      fclose (file);
+    }
+  else
+    {
+      return -1;
+    }
+}
+
+void
+eZapEmuSetup::cardinfoPressed ()
+{
+  // printf ("keyupdatePressed\n");
+  Executable = (char *) SCRIPTS[2];
+  hide ();
+  RunApp run;
+  run.show ();
+  run.exec ();
+  run.hide ();
+  show ();
+}
+
 eZapEmuSetup::~eZapEmuSetup ()
 {
 }
@@ -222,6 +271,8 @@ eZapEmuSetup::okPressed ()
 #endif
   if (RC->no_emu > 0)
     RC->v_SelectedEmu = (int) SelectedEmu->getCurrent ()->getKey ();
+  if (RC->no_crdsrv > 0)
+    RC->v_SelectedCrdsrv = (int) SelectedCrdsrv->getCurrent ()->getKey ();
   if (Serial != NULL)
     v_Serial = (int) Serial->getCurrent ()->getKey ();
   RC->write ();
@@ -267,13 +318,13 @@ void
 eZapEmuSetup::keyupdatePressed ()
 {
   // printf ("keyupdatePressed\n");
-  Executable = (char *) SCRIPTS[1];
-  hide ();
-  RunApp run;
-  run.show ();
-  run.exec ();
-  run.hide ();
-  show ();
+  if ( !pl_exec("key_setting.so") )
+    {
+      eMessageBox msg (_("Cannot find the 'key_setting' plugin"), _("Cannot find plugin"), eMessageBox::btOK | eMessageBox::iconError);
+      msg.show ();
+      msg.exec ();
+      msg.hide ();
+    }
 }
 
 char *
@@ -293,7 +344,17 @@ find_file (const char *file)
   sprintf ( filename, "/lib/tuxbox/plugins/%s", file);
   if (stat (filename, &st) == 0)
     return filename;
+  sprintf ( filename, "/var/bin/%s", file);
+  if (stat (filename, &st) == 0)
+    return filename;
+  sprintf ( filename, "/usr/bin/%s", file);
+  if (stat (filename, &st) == 0)
+    return filename;
+  sprintf ( filename, "/bin/%s", file);
+  if (stat (filename, &st) == 0)
+    return filename;
 
+  printf ("NOT FOUND\n");
   strcpy (filename, file);
   return filename;
 }
@@ -301,11 +362,8 @@ find_file (const char *file)
 void
 eZapEmuSetup::EmuSetup (eListBoxEntryText * item)
 {
-  int ok = 0;
-  void *handle;
-  char filename[256], tmp[128];
-  char *error, *ptr;
-  int (*do_plugin_exec) (PluginParam * par);
+  char tmp[128];
+  char *ptr;
 
   if (!item)
     return;
@@ -315,32 +373,9 @@ eZapEmuSetup::EmuSetup (eListBoxEntryText * item)
   ptr = strstr (tmp, "_cs_conf_edit.so");
   if (ptr)
     strcpy (tmp, "cs_conf_edit.so" );
-  strcpy (filename, find_file(tmp) );
+  // strcpy (filename, find_file(tmp) );
 
-  ok = 1;
-  if (ok == 1)
-    {
-      handle = dlopen (filename, RTLD_GLOBAL | RTLD_NOW);
-      if (!handle)
-        {
-          fprintf (stderr, "%s\n", dlerror ());
-          ok = 0;
-        }
-      dlerror ();               /* Clear any existing error */
-      *(void **) (&do_plugin_exec) = dlsym (handle, "plugin_exec");
-      if ((error = dlerror ()) != NULL)
-        {
-          fprintf (stderr, "%s\n", error);
-          ok = 0;
-        }
-      if (ok == 1)
-        {
-          (*do_plugin_exec) (NULL);
-          dlclose (handle);
-        }
-    }
-
-  if (!ok)
+  if ( !pl_exec(tmp) )
     {
       // eMessageBox msg (_(str.c_str ()), _(str.c_str ()), eMessageBox::btOK | eMessageBox::iconError);
       eMessageBox msg (_("No setup avaiable for this emu"), _("No setup avaiable for this emu"), eMessageBox::btOK | eMessageBox::iconError);

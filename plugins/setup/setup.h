@@ -36,10 +36,13 @@ class rc_config;
 #define MAX_SCRIPTS 8
 
 extern char EMU[MAX_EMU][256];
+extern char CRDSRV[MAX_EMU][256];
 extern char *SCRIPTS[MAX_SCRIPTS];
 extern char *Executable;
 extern char RUN_MESSAGE[128];
 extern char NO_OUTPUT_MESSAGE[128];
 extern rc_config *RC;
+int pl_exec(char *filename);
+char * find_file (const char *file);
 
 #endif

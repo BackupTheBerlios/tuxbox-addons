@@ -34,7 +34,7 @@
 
 
 #ifdef DM7020
-#define TITLE "Setup plugin (v0.09)"
+#define TITLE "Setup plugin (v0.11)"
 #else
 #define TITLE "Setup plugin (v0.20)"
 #endif
@@ -46,7 +46,8 @@
 
 eListBox < eListBoxEntryText > *listb;
 
-char EMU[MAX_EMU][256] = { "dr.matrix", "mgcamd" };
+char EMU[MAX_EMU][256] = { "scam" };
+char CRDSRV[MAX_EMU][256] = { "auto" };
 char *SCRIPTS[MAX_SCRIPTS] =
   { "/bin/keyconvert.sh 2>&1", "/bin/keyupdate.sh 2>&1", "cat /var/tmp/cardinfo", "cat /var/tmp/ipinfo", "/bin/load_d.sh", "/bin/load_a.sh" };
 char *Executable;
@@ -61,6 +62,16 @@ extern "C" int plugin_exec (PluginParam * par);
 int
 plugin_exec (PluginParam * par)
 {
+  char cmd[64];
+  sprintf ( cmd, "sh %s", RC_CONFIG );
+  if (system ( cmd ) )
+  {
+    printf ( "Config error, reset\n" );
+    unlink ( RC_CONFIG );
+    FILE *fp = fopen ( RC_CONFIG, "w" );
+    if (fp)
+      fclose (fp);
+  }
   eMySettings setup;
   setup.show ();
   setup.exec ();

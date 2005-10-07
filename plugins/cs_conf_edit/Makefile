@@ -28,6 +28,6 @@ clean:
 	rm -rf *.so *.o *.ipk
 
 install: all
-	cp $(PLUGIN).* $(HOME)/DM7020/ipkg/scam/usr/lib/tuxbox/plugins
+	cp $(PLUGIN).* $(HOME)/DM7020/ipkg/ronaldd_cs/usr/lib/tuxbox/plugins
 	cp $(PLUGIN).* /net/tuxbox/emu_root/lib/tuxbox/plugins
 	#ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg

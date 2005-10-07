@@ -79,14 +79,35 @@ rc_config::read ()
       RC->no_emu = 0;
     }
 
+  file = fopen ("/var/tmp/crdsrvlist", "r");
+  if (file)
+    {
+      i = 0;
+      while (fscanf (file, "%s\n", buf) != EOF)
+        {
+          // printf( "Q: (%s)\n", buf );
+          strcpy (CRDSRV[i], buf);
+          i++;
+        }
+      fclose (file);
+      RC->no_crdsrv = i;
+    }
+  else
+    {
+      RC->no_crdsrv = 0;
+    }
+
+
   StartDhcp = 0;
   StartServer = 0;
   StartCron = 0;
   StartSamba = 0;
   Enabled = 0;
   v_SelectedEmu = 0;
+  v_SelectedCrdsrv = 0;
   strcpy (RC->var_on, "flash");
   strcpy (RC->swap_on, "no");
+  strcpy (RC->swap_size, "16");
   sleep = 0;
 
   file = fopen (RC_CONFIG, "r");
@@ -101,9 +122,6 @@ rc_config::read ()
 #ifdef DEBUG
               printf ("RC_CONFIG: %s=%s\n", left, right);
 #endif
-
-              if (strcmp (left, "CRDSRV") == 0)
-                strcpy (RC->crdsrv, right);
 
               if (strcmp (left, "SWAP_ON") == 0)
                 strcpy (RC->swap_on, right);
@@ -141,6 +159,16 @@ rc_config::read ()
                       {
                         RC->Enabled = 1;
                         RC->v_SelectedEmu = i;
+                      }
+                  }
+              if (strcmp (left, "CRDSRV") == 0)
+                for (i = 0; i < RC->no_crdsrv; i++)
+                  {
+                    // printf ("right=(%s) CRDSRV[i]=(%s) i=%i\n", right, CRDSRV[i], i );
+                    if (strcmp (right, CRDSRV[i]) == 0)
+                      {
+                        RC->Enabled = 1;
+                        RC->v_SelectedCrdsrv = i;
                       }
                   }
 
@@ -237,7 +265,7 @@ rc_config::write ()
                 }
               else if (strcmp (left, "CRDSRV") == 0)
                 {
-                  fprintf (out, "CRDSRV=%s\n", RC->crdsrv);
+                  fprintf (out, "CRDSRV=%s\n", CRDSRV[v_SelectedCrdsrv]);
                   done |= 512;
                 }
 
@@ -266,7 +294,7 @@ rc_config::write ()
       if ((done & 256) == 0)
         fprintf (out, "SWAP_SIZE=%s\n", RC->swap_size);
       if ((done & 512) == 0)
-        fprintf (out, "CRDSRV=%s\n", RC->crdsrv);
+        fprintf (out, "CRDSRV=%s\n", CRDSRV[v_SelectedCrdsrv]);
 
       if (fclose (in) == 0)
         in = NULL;

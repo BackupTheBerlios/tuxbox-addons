@@ -35,12 +35,14 @@ public:
   int StartCron;
   int Enabled;
   int v_SelectedEmu;
+  int v_SelectedCrdsrv;
   int no_emu;
+  int no_crdsrv;
   int sleep;
   char var_on[16];
   char swap_on[16];
   char swap_size[16];
-  char crdsrv[32];
+  //char crdsrv[32];
   void read ();
   void write ();
 };

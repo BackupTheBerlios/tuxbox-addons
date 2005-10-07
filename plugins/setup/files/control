@@ -1,7 +1,7 @@
 Package: setup-plugin
 Section: plugins
 Priority: optional
-Version: 0.09-3
+Version: 0.11-5
 Architecture: dreambox
 Maintainer: Ronaldd <Ronaldd@sat4all.com>
 Depends: emud

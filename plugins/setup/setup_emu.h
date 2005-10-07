@@ -38,6 +38,7 @@ class rc_config;
 #define MAX_SCRIPTS 8
 
 extern char EMU[MAX_EMU][256];
+extern char CRDSRV[MAX_EMU][256];
 extern char *SCRIPTS[MAX_SCRIPTS];
 extern char *Executable;
 extern char RUN_MESSAGE[128];
@@ -57,9 +58,11 @@ private:
   void EmuStartSambaChanged (int i);
   void okPressed ();
   void abortPressed ();
+#ifdef NOT_ANY_MORE
   int v_CardInfo;
   int CardInfo ();
   void cardinfoPressed ();
+#endif
   int v_IpInfo;
   int IpInfo ();
   void ipinfoPressed ();
@@ -73,11 +76,15 @@ class eZapEmuSetup:public eWindow
   eCheckbox *eEmuEnabled, *eStartServer, *eStartDhcp;
   eStatusBar *statusbar;
     eListBox < eListBoxEntryText > *SelectedEmu;
+    eListBox < eListBoxEntryText > *SelectedCrdsrv;
     eListBox < eListBoxEntryText > *Serial;
   eConsoleAppContainer *app;
   eLabel *lState;
   eButton *bCancel, *bClose;
 private:
+  int v_CardInfo;
+  int CardInfo ();
+  void cardinfoPressed ();
   void EmuEnabledChanged (int i);
   void softcam2allPressed ();
   void keyupdatePressed ();
