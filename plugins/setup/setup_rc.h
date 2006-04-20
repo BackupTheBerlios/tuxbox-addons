@@ -23,7 +23,7 @@
 #ifdef DM7020
 #define RC_CONFIG "/etc/rc.config"
 #else
-#define RC_CONFIG "/mnt/flash/etc/rc.config"
+#define RC_CONFIG "/var/etc/rc.config"
 #endif
 
 class rc_config
