@@ -97,15 +97,16 @@ clean:
 install: all
 	cp setup*.cfg setup*.so /net/tuxbox/plugins/
 ifeq ($(BOX),DM7000)
-	cp setup7.so setup7.cfg /net/tuxbox/tftpboot/image/lib/tuxbox/plugins/
-	cp setup7.so setup7.cfg /net/tuxbox/emu_root$(KERNEL)/lib/tuxbox/plugins/
-	ncftpput -u root -p dreambox dreambox /var/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
+	cp setup7.so setup7.cfg $(HOME)/tuxbox/dm7000/root/tftpboot/root/lib/tuxbox/plugins
+	cp setup7.so setup7.cfg $(HOME)/dev2/dm700_image/extra_root/lib/tuxbox/plugins
+	#ncftpput -u root -p dreambox dreambox /var/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
 endif
 ifeq ($(BOX),DM7020)
 	ncftpput -u root -p dreambox dm7020 /usr/lib/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
 	#ncftpput -u root -p dreambox dm7020 /usr/bin emud
 	#ncftpput -u root -p dreambox dm7020 /tmp setup*.ipk
 	cp *ipk /net/web/dreambox/root/ipkg/feed
+	cp *ipk $(HOME)/tuxbox/dm7020/build/tmp/deploy/ipk
 	ipkg-make-index /net/web/dreambox/root/ipkg/feed >/net/web/dreambox/root/ipkg/feed/Packages
 	gzip -9 -f /net/web/dreambox/root/ipkg/feed/Packages
 
