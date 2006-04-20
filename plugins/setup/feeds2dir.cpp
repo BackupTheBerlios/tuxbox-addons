@@ -125,7 +125,7 @@ feeds2dir ()
             {
               *ptr = '\0';
             }
-          sprintf (list, "/usr/lib/ipkg/lists/%s", line);
+          sprintf (list, "/var/lib/ipkg/%s", line);
           // if ( strncmp ( "official-updated-ronaldd", line, 24) != 0 )
           feed2dir (list);
         }

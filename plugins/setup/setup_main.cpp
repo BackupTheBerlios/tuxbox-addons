@@ -193,7 +193,7 @@ eMySettings::ipkg_setup ()
       F = fopen ("/etc/ipkg/ronaldd-feed.conf", "w");
       if (F)
         {
-          fprintf (F, "src/gz ronaldd http://ronaldd.irde.to/ipkg/feed\n");
+          fprintf (F, "src/gz ronaldd http://dreambox-update.homeip.net/ipkg/feed\n");
           fclose (F);
         }
     }

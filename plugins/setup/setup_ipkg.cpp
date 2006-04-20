@@ -74,13 +74,6 @@ eSetupWindow (_("Package Manager"), 10, 350)
   CONNECT ((new
             eListBoxEntryMenu (&list, _("Install/remove packages"),
                                eString ().sprintf ("(%d) %s", ++entry, _("Install/remove packages"))))->selected, ipkgSetup::ipkg_inst_rem);
-  if (stat ("/etc/ipkg/official-updated-ronaldd-feed.conf", &st) != 0)
-    {
-      CONNECT ((new
-                eListBoxEntryMenu (&list, _("Upgrade to Ronaldd image"),
-                                   eString ().sprintf ("(%d) %s", ++entry, _("Select to upgrade official images to ronaldd images"))))->selected,
-               ipkgSetup::ipkg2ronaldd);
-    }
 }
 
 void
@@ -133,7 +126,7 @@ ipkgSetup::ipkg_inst_rem ()
   strcpy (dir, "/tmp/feeds");
   hide ();
   rv = stat (dir, &st1);
-  stat ("/usr/lib/ipkg/lists/official", &st2);
+  stat ("/var/lib/ipkg/official", &st2);
   if (st1.st_mtime < st2.st_mtime || rv != 0)
     {
       eMessageBox msg (_("please wait building package list.\n"), _("please wait..."), 0);
@@ -279,11 +272,11 @@ eSetupWindow (_("Package Manager"), 10, 450)
               sprintf (file, "/usr/lib/ipkg/info/%s.control", namelist[i]->d_name);
               if (stat (file, &st) == 0)
                 {
-                  new eListBoxEntryCheck ((eListBox < eListBoxEntry > *)listbox, name, "/temp/true", _("bla"));
+                  new eListBoxEntryCheck ((eListBox < eListBoxEntryMenu > *)listbox, name, "/temp/true", _("bla"));
                 }
               else
                 {
-                  new eListBoxEntryCheck ((eListBox < eListBoxEntry > *)listbox, name, "/temp/false", _("bla"));
+                  new eListBoxEntryCheck ((eListBox < eListBoxEntryMenu > *)listbox, name, "/temp/false", _("bla"));
                 }
             }
           free (namelist[i]);
@@ -367,7 +360,6 @@ ipkgInstRem::okPressed (eListBoxEntryText * item)
               system ("ipkg remove `cat /etc/.settings_package`");
               msg.hide ();
             }
-          //if ((strcmp (package, "daily-cvs-updates") == 0) && (stat ("/usr/lib/ipkg/info/daily-cvs-updates.control", &st) == 0))
           if ((strcmp (package, "official-updates") == 0) && (stat ("/usr/lib/ipkg/info/daily-cvs-updates.control", &st) == 0))
             {
               eMessageBox msg (_("please wait removing daily-cvs-updates package.\n"), _("please wait..."), 0);
