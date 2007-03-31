@@ -1,4 +1,10 @@
 #! /bin/sh
 
+[ ! -L /etc/rcS.d/S00bootup ] && { rm -f /etc/rcS.d/S00bootup ; ln -s ../init.d/bootup /etc/rcS.d/S00bootup ; }
+cat /etc/init.d/bootup |grep -v dccamd >/etc/init.d/bootup.new && mv /etc/init.d/bootup.new /etc/init.d/bootup
+chmod 755 /etc/init.d/bootup
+
+killall 2>/dev/null wdog
+
 /etc/init.d/emud.sh stop
 /etc/init.d/emud.sh start

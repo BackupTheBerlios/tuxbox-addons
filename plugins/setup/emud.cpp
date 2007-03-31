@@ -27,7 +27,7 @@ char
 message (const char *mes, int duration)
 {
   char url[512];
-  sprintf (url, "/cgi-bin/xmessage?timeout=%d&caption=Emu+Message&body=%s", duration, mes);
+  sprintf (url, "/cgi-bin/xmessage?timeout=%d&caption=Emu+Message&body=%s&type=1", duration, mes);
   wget (url);
 }
 
@@ -86,7 +86,7 @@ restart_emu ()
             {
               strcpy (crdsrv, emu);
               if (strcmp (crdsrv, "mgcam") == 0)
-                strcpy (crdsrv, "newcamd");
+                strcpy (crdsrv, "newcs");
             }
           printf ("Stop\n");
           message ("Stopping+cam+daemons", 2);

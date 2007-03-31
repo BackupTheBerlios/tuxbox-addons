@@ -197,7 +197,7 @@ eMySettings::ipkg_setup ()
           fclose (F);
         }
     }
-  if (stat ("/usr/lib/ipkg/info/setup-plugin.control", &st) != 0)
+  if (0 && stat ("/usr/lib/ipkg/info/setup-plugin.control", &st) != 0) // CHECK DISABLED
     {
       eMessageBox msg (_("Setup plugin is not installed as a package, this is needed for package manager.\nInstall now?"),
                        _("Install Setup plugin as package?"), eMessageBox::btYes | eMessageBox::btCancel, eMessageBox::btCancel);
@@ -206,7 +206,7 @@ eMySettings::ipkg_setup ()
       msg.hide ();
       if (res == eMessageBox::btYes)
         {
-          system ("echo true >/etc/init.d/modutils.sh ; chmod 755 /etc/init.d/modutils.sh");    // HACK for error in dream package
+          // system ("echo true >/etc/init.d/modutils.sh ; chmod 755 /etc/init.d/modutils.sh");    // HACK for error in dream package
           sprintf (exe, "sh -c \"ipkg update ; ipkg install -force-overwrite setup-plugin\"");
           Executable = exe;
           strcpy (RUN_MESSAGE, "");

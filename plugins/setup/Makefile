@@ -1,5 +1,5 @@
-CDK_SRC   ?= $(HOME)/tuxbox/dreambox
-CDKROOT   ?= /net/tuxbox/dreambox/cdkroot
+CDK_SRC   ?= $(HOME)/tuxbox/dm7000
+CDKROOT   ?= /net/tuxbox/dm7000/cdkroot
 DB_TARGET ?= powerpc-tuxbox-linux-gnu
 CROSS      = $(DB_TARGET)-
 CXX        = ccache $(CROSS)g++
@@ -17,10 +17,13 @@ endif
 ifeq ($(b), DM7000)
 BOX = DM7000
 # $(DBG) -DSETUP_GBOX
-DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_RESTORE \
-		-DDM7000 -DMOUNT_UNMOUNT
+#DEFINES  = $(DBG) -DSETUP_EMU -DSETUP_EXTRA -DSETUP_USB -DSETUP_INST -DSETUP_SERVICES -DSETUP_RESTORE -DDM7000 -DMOUNT_UNMOUNT
+#OBJECTS  = setup_runapp.o setup_extra.o setup_rc.o setup_services.o setup_emu.o setup_usb.o setup_main.o \
+#	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o plugin.o
+#PLUGIN    = setup7
+DEFINES  = $(DBG) -DDM7020 -DSETUP_EMU -DSETUP_USB -DSETUP_CS -DSETUP_GBOX -DMOUNT_UNMOUNT -DSETUP_IPKG #-DSETUP_RDG
 OBJECTS  = setup_runapp.o setup_extra.o setup_rc.o setup_services.o setup_emu.o setup_usb.o setup_main.o \
-	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o plugin.o
+	   setup_install.o setup_cs.o setup_gbox.o setup_rdg.o setup_restore.o setup_ipkg.o feeds2dir.o plugin.o
 PLUGIN    = setup7
 endif
 
@@ -95,10 +98,11 @@ clean:
 	rm -rf *.so *.o *.ipk
 
 install: all
-	cp setup*.cfg setup*.so /net/tuxbox/plugins/
+	#cp setup*.cfg setup*.so /net/tuxbox/plugins/
 ifeq ($(BOX),DM7000)
 	cp setup7.so setup7.cfg $(HOME)/tuxbox/dm7000/root/tftpboot/root/lib/tuxbox/plugins
-	cp setup7.so setup7.cfg $(HOME)/dev2/dm700_image/extra_root/lib/tuxbox/plugins
+	cp setup7.so setup7.cfg $(HOME)/dev2/dm7000_image/extra_root/lib/tuxbox/plugins
+	cp emud feeds2dir $(HOME)/dev2/dm7000_image/extra_root/bin
 	#ncftpput -u root -p dreambox dreambox /var/tuxbox/plugins $(PLUGIN).so $(PLUGIN).cfg
 endif
 ifeq ($(BOX),DM7020)

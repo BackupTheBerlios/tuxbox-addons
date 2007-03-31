@@ -126,7 +126,7 @@ ipkgSetup::ipkg_inst_rem ()
   strcpy (dir, "/tmp/feeds");
   hide ();
   rv = stat (dir, &st1);
-  stat ("/var/lib/ipkg/official", &st2);
+  stat ("/var/lib/ipkg/ronaldd", &st2);
   if (st1.st_mtime < st2.st_mtime || rv != 0)
     {
       eMessageBox msg (_("please wait building package list.\n"), _("please wait..."), 0);
