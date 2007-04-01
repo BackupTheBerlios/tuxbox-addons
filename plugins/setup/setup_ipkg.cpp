@@ -110,10 +110,10 @@ ipkgSetup::ipkg_upgrade ()
   printf ("mount -o ro,remount /boot\n");
   system ("mount -o ro,remount /boot");
   show ();
-  if (stat ("/usr/bin/enigma", &st1) == 0)
+  if (stat (ENIGMA_BIN, &st1) == 0)
     if (time_stamp_enigma != st1.st_mtime)
       close (0);
-  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0)
+  if (stat (PLUGIN_BIN, &st1) == 0)
     if (time_stamp != st1.st_mtime)
       close (0);
 }
@@ -143,10 +143,10 @@ ipkgSetup::ipkg_inst_rem ()
       win.exec ();
       win.hide ();
     }
-  if (stat ("/usr/bin/enigma", &st1) == 0)
+  if (stat (ENIGMA_BIN, &st1) == 0)
     if (time_stamp_enigma != st1.st_mtime)
       close (0);
-  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0)
+  if (stat (PLUGIN_BIN, &st1) == 0)
     if (time_stamp != st1.st_mtime)
       close (0);
   show ();
@@ -177,10 +177,10 @@ ipkgSetup::ipkg2ronaldd ()
       run.hide ();
       show ();
     }
-  if (stat ("/usr/bin/enigma", &st1) == 0)
+  if (stat (ENIGMA_BIN, &st1) == 0)
     if (time_stamp_enigma != st1.st_mtime)
       close (0);
-  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st1) == 0)
+  if (stat (PLUGIN_BIN, &st1) == 0)
     if (time_stamp != st1.st_mtime)
       close (0);
 }

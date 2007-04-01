@@ -34,9 +34,10 @@
 
 
 #ifdef DM7020
-#define TITLE "Setup plugin (v0.11)"
-#else
-#define TITLE "Setup plugin (v0.20)"
+#define TITLE "Setup plugin dm7020 (v0.11)"
+#endif
+#ifdef DM7000
+#define TITLE "Setup plugin dm7000 (v0.20)"
 #endif
 
 #include <lib/gui/emessage.h>
@@ -91,9 +92,9 @@ eMySettings::eMySettings ():eSetupWindow (_(TITLE), 10, 350)
 
   move (ePoint (180, 100));
 
-  if (stat ("/usr/bin/enigma", &st) == 0)
+  if (stat (ENIGMA_BIN, &st) == 0)
     time_stamp_enigma = st.st_mtime;
-  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st) == 0)
+  if (stat (PLUGIN_BIN, &st) == 0)
     time_stamp = st.st_mtime;
 
 
@@ -197,28 +198,7 @@ eMySettings::ipkg_setup ()
           fclose (F);
         }
     }
-  if (0 && stat ("/usr/lib/ipkg/info/setup-plugin.control", &st) != 0) // CHECK DISABLED
-    {
-      eMessageBox msg (_("Setup plugin is not installed as a package, this is needed for package manager.\nInstall now?"),
-                       _("Install Setup plugin as package?"), eMessageBox::btYes | eMessageBox::btCancel, eMessageBox::btCancel);
-      msg.show ();
-      res = msg.exec ();
-      msg.hide ();
-      if (res == eMessageBox::btYes)
-        {
-          // system ("echo true >/etc/init.d/modutils.sh ; chmod 755 /etc/init.d/modutils.sh");    // HACK for error in dream package
-          sprintf (exe, "sh -c \"ipkg update ; ipkg install -force-overwrite setup-plugin\"");
-          Executable = exe;
-          strcpy (RUN_MESSAGE, "");
-          RunApp run;
-          run.show ();
-          run.exec ();
-          run.hide ();
-          unlink ("/etc/init.d/modutils.sh");   // HACK for error in dream package
-        }
-    }
-
-  if (stat ("/usr/bin/enigma", &st) == 0)
+  if (stat (ENIGMA_BIN, &st) == 0)
     if (time_stamp_enigma != st.st_mtime)
       {
         eMessageBox *msg;
@@ -228,7 +208,7 @@ eMySettings::ipkg_setup ()
         msg->hide ();
         eZap::getInstance ()->quit (1);
       }
-  if (stat ("/usr/lib/tuxbox/plugins/setup7020.so", &st) == 0)
+  if (stat (PLUGIN_BIN, &st) == 0)
     if (time_stamp != st.st_mtime)
       {
         eMessageBox *msg;
@@ -239,13 +219,10 @@ eMySettings::ipkg_setup ()
         close (0);
         return;
       }
-  if (stat ("/usr/lib/ipkg/info/setup-plugin.control", &st) == 0)
-    {
-      ipkgSetup setup;
-      setup.show ();
-      setup.exec ();
-      setup.hide ();
-    }
+  ipkgSetup setup;
+  setup.show ();
+  setup.exec ();
+  setup.hide ();
 
   show ();
 }

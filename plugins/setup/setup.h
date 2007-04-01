@@ -35,6 +35,16 @@ class rc_config;
 #define MAX_EMU 10
 #define MAX_SCRIPTS 8
 
+#ifdef DM7020
+#define ENIGMA_BIN "/usr/bin/enigma"
+#define PLUGIN_BIN "/usr/lib/tuxbox/plugins/setup7020.so"
+#endif
+
+#ifdef DM7000
+#define ENIGMA_BIN "/bin/enigma"
+#define PLUGIN_BIN "/var/tuxbox/plugins/setup7.so"
+#endif
+
 extern char EMU[MAX_EMU][256];
 extern char CRDSRV[MAX_EMU][256];
 extern char *SCRIPTS[MAX_SCRIPTS];

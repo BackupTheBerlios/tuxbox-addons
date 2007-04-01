@@ -5,6 +5,14 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef DM7020
+#define INIT_D "/etc/init.d"
+#endif
+
+#ifdef DM7000
+#define INIT_D "/var/etc/init.d"
+#endif
+
 int port = 80;
 
 int
@@ -90,8 +98,8 @@ restart_emu ()
             }
           printf ("Stop\n");
           message ("Stopping+cam+daemons", 2);
-          system ("sh -c \"ls /etc/init.d/emu_* |while read x ; do sh \\$x stop ; done\"");
-          system ("sh -c \"ls /etc/init.d/crdsrv* |while read x ; do sh \\$x stop ; done\"");
+          system ("sh -c \"ls " INIT_D "/emu_* |while read x ; do sh \\$x stop ; done\"");
+          system ("sh -c \"ls " INIT_D "/crdsrv* |while read x ; do sh \\$x stop ; done\"");
           unlink ("/var/tmp/camd.socket");
           sleep (4);
           unlink ("/etc/rcS.d/S40emu");
